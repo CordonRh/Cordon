@@ -188,6 +188,17 @@ describe("keys", () => {
     expect(await c.spendingKey()).toBe(sk); // same signature, same key
   });
 
+  test("listeners learn the owner key when it is derived and lose it when forgotten (wallet switch)", async () => {
+    const seen: (string | undefined)[] = [];
+    const off = c.onOwnerChange((o) => seen.push(o));
+    c.forgetKey();
+    await c.spendingKey();
+    off();
+    c.forgetKey();
+    await c.spendingKey();
+    expect(seen).toEqual([undefined, me.toString()]);
+  });
+
   test("a Cordon key round-trips and rejects malformed input", async () => {
     const key = await c.cordonKey();
     expect(key).toMatch(/^0x[0-9a-f]{128}$/);

@@ -350,7 +350,7 @@ export const appRouter = router({
     revoke: walletProcedure.input(z.string().uuid()).mutation(async ({ ctx, input }) => {
       const { error } = await ctx.supabase
         .from("disclosures")
-        .update({ revoked: true })
+        .update({ revoked: true, ciphertext: "" }) // a revoked grant keeps no copy of the notes
         .eq("id", input)
         .eq("owner", ctx.userId);
       if (error) dbError(error);

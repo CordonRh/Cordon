@@ -122,9 +122,18 @@ export async function spendingKey() {
     const sig = await signWithWallet(NOTE_KEY_MESSAGE);
     const digest = new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(sig)));
     sk = digest.reduce((x, b) => (x << 8n) | BigInt(b), 0n) % FIELD;
+    const owner = ownerPkOf(sk).toString();
+    ownerListeners.forEach((f) => f(owner));
   }
   return sk;
 }
+
+const ownerListeners = new Set<(owner: string | undefined) => void>();
+/** Calls `f` with this session's owner key (decimal) when it is derived, and undefined when forgotten. */
+export const onOwnerChange = (f: (owner: string | undefined) => void) => {
+  ownerListeners.add(f);
+  return () => void ownerListeners.delete(f);
+};
 
 /** True once the note key was derived this session (so background work never prompts a signature). */
 export const keyReady = () => sk !== undefined;
@@ -133,6 +142,7 @@ export const keyReady = () => sk !== undefined;
 export const forgetKey = () => {
   sk = undefined;
   recv = undefined;
+  ownerListeners.forEach((f) => f(undefined));
 };
 
 async function tree() {
@@ -222,6 +232,7 @@ async function relay(target: Address, data: `0x${string}`, change: Omit<Change, 
 
 /** Commits of pending notes that have reached the tree (deposits past standby, relayed notes once indexed). */
 export async function indexed(notes: StoredNote[]) {
+  await initHasher();
   const pending = notes.filter((s) => s.status === "pending");
   if (!pending.length) return [];
   const t = await tree();
@@ -230,6 +241,7 @@ export async function indexed(notes: StoredNote[]) {
 
 /** Deposits `raw` units of `asset` for a fresh note; it goes live after the standby. */
 export async function deposit(asset: Address, raw: bigint): Promise<StoredNote> {
+  await initHasher();
   const d = need();
   const note = underlying(asset, raw, ownerPkOf(await spendingKey()), randomField());
   const approve = await writeContract(wagmiConfig, {
@@ -253,6 +265,7 @@ export async function deposit(asset: Address, raw: bigint): Promise<StoredNote> 
 
 /** Bundles a live underlying note through the relayer into its claim notes. */
 export async function bundle(stored: StoredNote, h: Hooks): Promise<Change> {
+  await initHasher();
   const d = need();
   const key = await spendingKey();
   const u = fromStored(stored);
@@ -286,6 +299,7 @@ export async function bundle(stored: StoredNote, h: Hooks): Promise<Change> {
  * it is opt-in: pass `"whole"`; an amount equal to the whole note is refused.
  */
 export async function withdraw(stored: StoredNote, recipient: Address, h: Hooks, raw: bigint | "whole"): Promise<Change> {
+  await initHasher();
   const d = need();
   const n = fromStored(stored);
   if (n.kind !== KIND.UNDERLYING || n.lock !== 0n) throw new Error("Only a free underlying note can be withdrawn.");
@@ -315,6 +329,7 @@ export async function withdraw(stored: StoredNote, recipient: Address, h: Hooks,
  * Without `force`, refuses when nothing has accrued; recombining forces it to catch the note up.
  */
 export async function claimIncome(stored: StoredNote, h: Hooks, opts: { tEnd?: bigint; force?: boolean } = {}): Promise<Change> {
+  await initHasher();
   const d = need();
   const n = fromStored(stored);
   if (n.kind !== KIND.INCOME || n.lock !== 0n) throw new Error("Only a free INCOME note can claim income.");
@@ -345,6 +360,7 @@ export async function claimIncome(stored: StoredNote, h: Hooks, opts: { tEnd?: b
 
 /** Splits an open-ended INCOME note into income until `until` and the remainder from `until`. */
 export async function setIncomeTerm(stored: StoredNote, until: bigint, h: Hooks): Promise<Change> {
+  await initHasher();
   const d = need();
   const n = fromStored(stored);
   const [key, t, now] = await Promise.all([spendingKey(), treeWith(n), chainNow()]);
@@ -365,6 +381,7 @@ export async function setIncomeTerm(stored: StoredNote, until: bigint, h: Hooks)
  * claimed up to the latest index checkpoint first, as the unbundle circuit requires.
  */
 export async function unbundle(notes: StoredNote[], bundleId: string, h: Hooks): Promise<Change> {
+  await initHasher();
   const d = need();
   const mine = notes
     .filter((s) => s.status === "live" && s.bundleId === bundleId && s.lock === "0" && s.termUntil === "0")
@@ -441,6 +458,7 @@ export async function encumber(
   o: { kind: EncKind; until: bigint; holder?: string; obligation?: string },
   h: Hooks,
 ): Promise<Change> {
+  await initHasher();
   const d = need();
   const n = fromStored(stored);
   const holder = o.kind === "LOCKUP" ? undefined : parsePledgeCode(o.holder ?? "");
@@ -482,6 +500,7 @@ async function encState(enc: Encumbrance) {
 
 /** Frees a locked note once released (a LOCKUP past its end, or the holder's release). */
 export async function unlock(stored: StoredNote, h: Hooks): Promise<Change> {
+  await initHasher();
   const d = need();
   if (!stored.enc) throw new Error("This note's encumbrance is not in your workspace.");
   const n = fromStored(stored);
@@ -512,6 +531,7 @@ export const heldCommit = (held: Held) => encCommit(encFromJson(held.enc)).toStr
 
 /** "pending" until the encumbrance exists on-chain: a held item proves nothing by itself. */
 export async function heldState(held: Held): Promise<NonNullable<Held["state"]>> {
+  await initHasher();
   const enc = encFromJson(held.enc);
   const s = await encState(enc);
   if (!s.exists) return "pending";
@@ -525,6 +545,7 @@ export async function heldState(held: Held): Promise<NonNullable<Held["state"]>>
 
 /** Holder: the obligation is met; reveal the secret so the owner can unlock. */
 export async function release(held: Held, h: Hooks) {
+  await initHasher();
   const enc = encFromJson(held.enc);
   const data = encodeFunctionData({
     abi: encumbranceRegistryAbi,
@@ -536,11 +557,13 @@ export async function release(held: Held, h: Hooks) {
 
 /** Holder: ask for a default (the keeper declares it once approved; testnet approves at once). */
 export async function requestDefault(held: Held) {
+  await initHasher();
   await trpc.encumbrances.requestDefault.mutate(hex32(encCommit(encFromJson(held.enc))));
 }
 
 /** Holder: after a declared default, take the note down the waterfall (the whole note here). */
 export async function enforce(held: Held, h: Hooks): Promise<Change> {
+  await initHasher();
   const d = need();
   const enc = encFromJson(held.enc);
   const locked = fromStored(held.locked);
@@ -577,6 +600,7 @@ async function receivingKey() {
 
 /** Share this so others can send you notes, name you as a holder, or disclose to you. */
 export async function cordonKey() {
+  await initHasher();
   const pk = ownerPkOf(await spendingKey());
   return `${hex32(pk)}${b64ToHex((await receivingKey()).publicKey)}`;
 }
@@ -599,6 +623,7 @@ async function releaseSecret(nonce: bigint) {
  * ever compute the secret, so only it can release. Nothing needs to be stored.
  */
 export async function pledgeCode() {
+  await initHasher();
   const nonce = randomField();
   return `${await cordonKey()}${hex32(h1(await releaseSecret(nonce))).slice(2)}${hex32(nonce).slice(2)}`;
 }
@@ -624,6 +649,7 @@ async function post(pub: string, item: InboxItem) {
  * only if they belong to this wallet's key; the caller checks DvP results against its orders.
  */
 export async function readInbox(after: number) {
+  await initHasher();
   const { privateKey } = await receivingKey();
   const mine = ownerPkOf(await spendingKey()).toString();
   const items: InboxItem[] = [];
@@ -650,6 +676,7 @@ export async function readInbox(after: number) {
 
 /** Sends `raw` units of a note to another wallet's Cordon key; the rest stays as change. */
 export async function send(stored: StoredNote, raw: bigint, to: string, h: Hooks): Promise<Change> {
+  await initHasher();
   const d = need();
   const r = parseCordonKey(to);
   const n = fromStored(stored);
@@ -683,6 +710,7 @@ export async function placeOrder(
   p: { notes: StoredNote[]; give: Address; raw: bigint; want: Address; ref: string },
   h: Hooks = {},
 ): Promise<string> {
+  await initHasher();
   const sk = await spendingKey();
   const asset = BigInt(p.give).toString();
   const gives: { note: Note; amount: bigint }[] = [];
@@ -729,6 +757,7 @@ const orderFromJson = (s: string) =>
  * no longer settle.
  */
 export async function recoverOrder(json: string): Promise<(Change & { expired?: boolean }) | null> {
+  await initHasher();
   const d = need();
   const o = orderFromJson(json);
   const h = orderHash(o);
@@ -765,6 +794,7 @@ export const vaultIdOf = (wallet: Address) => keccak256(toBytes(`cordon-vault:${
 
 /** A wallet's vault: registration, pending request and the latest attested NAV. */
 export async function vaultState(wallet: Address) {
+  await initHasher();
   const d = need();
   const vaultId = vaultIdOf(wallet);
   const [v, req] = await Promise.all([
@@ -787,6 +817,7 @@ export async function vaultState(wallet: Address) {
  * Needs the wallet signed in (Sync workspace): the server takes the id from that wallet.
  */
 export async function requestVault(_wallet: Address) {
+  await initHasher();
   const pk = ownerPkOf(await spendingKey());
   await trpc.nav.requestVault.mutate({ vaultPk: hex32(pk) });
 }
@@ -800,6 +831,7 @@ const feedAbi = [
  * attests it from the wallet (the vault manager). Shares are whole units (18 decimals on-chain).
  */
 export async function attestNav(p: { wallet: Address; notes: StoredNote[]; shares: bigint; liabilitiesUsd: number }, h: Hooks) {
+  await initHasher();
   const d = need();
   const holdings = p.notes.filter((n) => n.status === "live" && n.kind === "0" && n.lock === "0").map(fromStored);
   if (!holdings.length) throw new Error("No free underlying notes to value.");
@@ -848,6 +880,7 @@ export type Disclosed = {
 
 /** Seals the chosen notes (with their nullifiers, so the viewer can check they are unspent) to a Cordon key. */
 export async function grantDisclosure(p: { to: string; scope: string; purpose: string; until: string; notes: StoredNote[] }) {
+  await initHasher();
   const r = parseCordonKey(p.to);
   const sk = await spendingKey();
   const payload: Disclosed = {
@@ -866,6 +899,7 @@ export const revokeDisclosure = (id: string) => trpc.disclose.revoke.mutate(id);
 
 /** Opens a disclosure addressed to this wallet and checks each note against the chain. */
 export async function openDisclosure(id: string) {
+  await initHasher();
   const g = await trpc.disclose.get.query(id);
   if (!g) throw new Error("This disclosure was revoked or does not exist.");
   const d = await open<Disclosed>((await receivingKey()).privateKey, atob(g.ciphertext)).catch(() => {
@@ -893,6 +927,7 @@ const faucetAbi = [
 
 /** Mints testnet faucet tokens to `to` (testnet only). */
 export async function faucet(symbol: string, to: Address) {
+  await initHasher();
   const token = testAssets[symbol];
   if (!token) throw new Error(`No test ${symbol} on this network.`);
   const amount = symbol === "USDG" ? 1000n * 10n ** 6n : 100n * 10n ** 18n;

@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 
-import { createRecord, initial, isWorkspace, mergeWorkspaces, pledgeCodes, type Workspace } from "./model";
+import { createRecord, initial, isWorkspace, mergeCursors, mergeWorkspaces, pledgeCodes, type Workspace } from "./model";
 
 const record = (name: string, created: string, status: "Prepared" | "Archived" = "Prepared") => ({
   ...createRecord("bundles", { name, amount: "10" }),
@@ -66,4 +66,9 @@ test("a pledge code is single-use, also across boxes opened in one pass", () => 
   expect(free({ enc: "0xb", nonce: "1" })).toBe(false); // an old code reused
   expect(free({ enc: "0xc", nonce: "2" })).toBe(true);
   expect(free({ enc: "0xd", nonce: "2" })).toBe(false); // reused within the same pass
+});
+
+test("inbox cursors are kept per wallet and merge to the furthest read", () => {
+  expect(mergeCursors({ "0xa": 11, "0xb": 3 }, { "0xa": 9, "0xc": 5 })).toEqual({ "0xa": 11, "0xb": 3, "0xc": 5 });
+  expect(mergeCursors(undefined, undefined)).toEqual({});
 });

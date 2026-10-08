@@ -439,6 +439,7 @@ describe("procedures", () => {
       await caller().disclose.grant({ viewerPk: hash, scope: "notes", ciphertext: "AA==" }),
     ).toEqual({ id });
     expect(await caller().disclose.revoke(id)).toEqual({ revoked: true });
+    expect(user.log[1].arg("update")).toEqual([{ revoked: true, ciphertext: "" }]); // nothing kept after revoke
     expect(eqs(user.log[1])).toEqual([
       ["id", id],
       ["owner", "u1"],

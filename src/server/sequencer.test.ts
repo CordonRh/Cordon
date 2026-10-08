@@ -150,6 +150,7 @@ async function batch(
     rows.map(async (r) => ({ id: r.id, box: r.box ?? (await seal(key.publicKey, r.order)) })),
   );
   const closed: number[] = [];
+  const released: number[] = [];
   const inbox: string[] = [];
   const db = fakeDb((q: Query) => {
     if (q.table === "rpc:dvp_take") return { data: boxes };
@@ -168,8 +169,11 @@ async function batch(
           nullifier: `0x${n.toString(16).padStart(64, "0")}`,
         })),
       };
-    if (q.table === "dvp_orders" && q.op === "update")
-      closed.push(...(q.arg("in")![1] as number[]));
+    if (q.table === "dvp_orders" && q.op === "update") {
+      const ids = q.arg("in")![1] as number[];
+      if ((q.arg("update")![0] as { closed?: boolean }).closed) closed.push(...ids);
+      else released.push(...ids);
+    }
     if (q.table === "note_inbox") {
       inbox.push((q.arg("insert")![0] as { box: string }).box);
       if (opts.inboxError) return { error: { message: "inbox full" } };
@@ -226,7 +230,7 @@ async function batch(
   const posts = await Promise.all(
     inbox.map((b) => open<Record<string, unknown>>(reply.privateKey, b)),
   );
-  return { result, closed, posts, submitted };
+  return { result, closed, released, posts, submitted };
 }
 
 const proveSpy = spyOn(Prover.prototype, "prove");
@@ -272,6 +276,15 @@ describe("runBatch", () => {
     ]);
     expect(closed.sort()).toEqual([1, 2, 3, 4, 5, 6, 7]);
     expect(result).toEqual({ orders: 0, trades: 0 });
+  });
+
+  test("releases the lease of every order it took, so orders placed a minute apart still meet", async () => {
+    const [a] = pairTerms(60n);
+    const lonely = signed(a);
+    const { result, closed, released } = await batch([{ id: 9, order: lonely }], { tree: [commit(a.gives[0].note)] });
+    expect(result).toEqual({ orders: 1, trades: 0 });
+    expect(closed).toEqual([]);
+    expect(released).toEqual([9]);
   });
 
   test("closes spent and superseded orders, keeps young off-tree ones waiting, closes stale ones", async () => {
