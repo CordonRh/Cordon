@@ -14,12 +14,12 @@ export const footerMock = {
       {
         "label": "gh",
         "name": "GitHub",
-        "href": "#github"
+        "href": "https://github.com/CordonRh/Cordon"
       },
       {
         "label": "tg",
         "name": "Telegram",
-        "href": "#telegram"
+        "href": "https://t.me/cordononrhchain"
       }
     ]
   },

@@ -68,6 +68,7 @@ export const BrandPanel = ({
           <li key={social.name}>
             <Link
               href={social.href}
+              {...(social.href.startsWith('http') ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
               aria-label={social.name}
               className="flex size-8 items-center justify-center overflow-clip rounded-footer-chip border border-footer-social-border bg-footer-social-fill font-mono text-label leading-label text-footer-social-label transition-colors duration-(--motion-fast) ease-entrance hover:text-foreground"
             >
