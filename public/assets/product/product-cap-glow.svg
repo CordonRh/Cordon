@@ -1,0 +1,6 @@
+<svg width="100" height="72" viewBox="0 0 100 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g filter="url(#glow)"><path d="M50 20L80 36L50 52L20 36L50 20Z" fill="#ff8158"/></g>
+<defs>
+<filter id="glow" x="0" y="0" width="100" height="72" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feGaussianBlur stdDeviation="8"/></filter>
+</defs>
+</svg>

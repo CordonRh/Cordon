@@ -1,0 +1,6 @@
+[package]
+name = "dvp"
+type = "bin"
+
+[dependencies]
+cordon = { path = "../lib" }

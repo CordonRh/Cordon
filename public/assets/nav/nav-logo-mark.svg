@@ -1,0 +1,29 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Logo mark">
+<g clip-path="url(#clip0_0_6)">
+<rect width="28" height="28" rx="9" fill="url(#paint0_linear_0_6)"/>
+<g id="Shine" filter="url(#filter0_f_0_6)">
+<ellipse cx="14" cy="-6" rx="28" ry="14" fill="white" fill-opacity="0.22"/>
+</g>
+<g id="Glyph">
+<path id="Vector" d="M8 8L14 14L8 20" stroke="#0b0909" stroke-opacity="0.5" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path id="Vector_2" d="M14 8L20 14L14 20" stroke="#0b0909" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+</g>
+<rect x="0.5" y="0.5" width="27" height="27" rx="8.5" stroke="white" stroke-opacity="0.25"/>
+</g>
+<defs>
+<filter id="filter0_f_0_6" x="-23" y="-29" width="74" height="46" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+<feGaussianBlur stdDeviation="4.5" result="effect1_foregroundBlur_0_6"/>
+</filter>
+<linearGradient id="paint0_linear_0_6" x1="-6" y1="6" x2="14" y2="26" gradientUnits="userSpaceOnUse">
+<stop stop-color="#ffb38f"/>
+<stop offset="1" stop-color="#ff8158"/>
+</linearGradient>
+<clipPath id="clip0_0_6">
+<rect width="28" height="28" rx="9" fill="white"/>
+</clipPath>
+</defs>
+</svg>

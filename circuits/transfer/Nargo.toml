@@ -1,0 +1,6 @@
+[package]
+name = "transfer"
+type = "bin"
+
+[dependencies]
+cordon = { path = "../lib" }

@@ -1,0 +1,6 @@
+[package]
+name = "nav"
+type = "bin"
+
+[dependencies]
+cordon = { path = "../lib" }

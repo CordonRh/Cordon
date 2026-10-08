@@ -1,0 +1,88 @@
+/* scale section tokens — same three tiers as src/app/globals.css.
+   Names are prefixed with the section (--raw-scale-*, --scale-*, --<tw-namespace>-scale-*).
+   Shared tokens live in globals.css; do not redefine them here. */
+
+/* Tier 1 — primitives (06 Scale 3888:6445) */
+:root {
+  /* Card fill 3888:6454 / 3888:6489 (#17181a → #0e0f11), made glass (not in
+     Figma): the same gradient, translucent, over the particle stream */
+  --raw-scale-color-card-glass-from: rgba(23, 24, 26, 0.55);
+  --raw-scale-color-card-glass-to: rgba(14, 15, 17, 0.4);
+  --raw-scale-color-lane: rgba(255, 255, 255, 0.07); /* Lane 3888:6511 */
+  --raw-scale-color-share: rgba(255, 255, 255, 0.32); /* Share 3888:6516 */
+  --raw-scale-radius-card: 1.5rem; /* 24 */
+  --raw-scale-font-size-12: 0.75rem; /* art mono at 390 (3918:1380) */
+  --raw-scale-font-size-13: 0.8125rem; /* region name at 390 (3893:3793) */
+  --raw-scale-line-height-16: 1rem;
+  --raw-scale-line-height-18: 1.125rem;
+  --raw-scale-letter-spacing-0: 0;
+}
+
+/* Tier 2 — semantic */
+:root {
+  --scale-card-from: var(--raw-scale-color-card-glass-from);
+  --scale-card-to: var(--raw-scale-color-card-glass-to);
+  --scale-lane: var(--raw-scale-color-lane);
+  --scale-share: var(--raw-scale-color-share);
+  --scale-hairline: var(--raw-color-white-a06); /* Hairline 3888:6497 */
+  --scale-corner-card: var(--raw-scale-radius-card);
+  /* Card title 26/32 (3888:6455), copy 16/24, art mono 14/20. */
+  --scale-type-card-title: var(--raw-font-size-26);
+  --scale-line-card-title: var(--raw-line-height-32);
+  --scale-letter-spacing-card-title: var(--raw-letter-spacing-minus-1);
+  --scale-type-card-copy: var(--raw-font-size-16);
+  --scale-line-card-copy: var(--raw-line-height-24);
+  --scale-type-mono: var(--raw-font-size-14);
+  --scale-line-mono: var(--raw-line-height-20);
+  --scale-type-region: var(--raw-font-size-14);
+  --scale-line-region: var(--raw-line-height-20);
+}
+
+/* 1024 (3949:13127): title 24/32. */
+@media (width <= 1200px) {
+  :root {
+    --scale-type-card-title: var(--raw-font-size-24);
+  }
+}
+
+/* 768 (3832:8119): title 20/28. */
+@media (width <= 900px) {
+  :root {
+    --scale-type-card-title: var(--raw-font-size-20);
+    --scale-line-card-title: var(--raw-line-height-28);
+  }
+}
+
+/* 390 (3893:3754): title 18/20 untracked, copy 14/20, art mono 12/16,
+   region names 13/18. */
+@media (width <= 580px) {
+  :root {
+    --scale-type-card-title: var(--raw-font-size-18);
+    --scale-line-card-title: var(--raw-line-height-20);
+    --scale-letter-spacing-card-title: var(--raw-scale-letter-spacing-0);
+    --scale-type-card-copy: var(--raw-font-size-14);
+    --scale-line-card-copy: var(--raw-line-height-20);
+    --scale-type-mono: var(--raw-scale-font-size-12);
+    --scale-line-mono: var(--raw-scale-line-height-16);
+    --scale-type-region: var(--raw-scale-font-size-13);
+    --scale-line-region: var(--raw-scale-line-height-18);
+  }
+}
+
+@theme inline {
+  --color-scale-card-from: var(--scale-card-from);
+  --color-scale-card-to: var(--scale-card-to);
+  --color-scale-lane: var(--scale-lane);
+  --color-scale-share: var(--scale-share);
+  --color-scale-hairline: var(--scale-hairline);
+  --radius-scale-card: var(--scale-corner-card);
+  --text-scale-card-title: var(--scale-type-card-title);
+  --leading-scale-card-title: var(--scale-line-card-title);
+  --tracking-scale-card-title: var(--scale-letter-spacing-card-title);
+  --text-scale-card-copy: var(--scale-type-card-copy);
+  --leading-scale-card-copy: var(--scale-line-card-copy);
+  --text-scale-mono: var(--scale-type-mono);
+  --leading-scale-mono: var(--scale-line-mono);
+  --text-scale-region: var(--scale-type-region);
+  --leading-scale-region: var(--scale-line-region);
+}

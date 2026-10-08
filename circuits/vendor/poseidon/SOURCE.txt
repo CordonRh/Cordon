@@ -1,0 +1,2 @@
+Vendored from https://github.com/noir-lang/poseidon tag v0.3.0 (commit 0880c371e88e583d39515fd3f877538657ac41eb), unmodified.
+Nargo cannot lock git dependencies, so the circuits use this copy.

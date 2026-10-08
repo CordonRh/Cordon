@@ -1,0 +1,8 @@
+{
+  "name": "@cordon/nav-prover",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": { "attest": "bun src/attest.ts" },
+  "dependencies": { "@cordon/sdk": "workspace:*", "@cordon/shared": "workspace:*" }
+}

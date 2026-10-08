@@ -1,0 +1,80 @@
+/* integrations section tokens — same three tiers as src/app/globals.css.
+   Names are prefixed with the section (--raw-integrations-*, --integrations-*, --<tw-namespace>-integrations-*).
+   Shared tokens live in globals.css; do not redefine them here. */
+
+/* TIER 1 — RAW */
+:root {
+  --raw-integrations-color-tile-to: rgba(
+    255,
+    255,
+    255,
+    0.02
+  ); /* App tile gradient end 3488:21966 */
+  --raw-integrations-color-tile-border: rgba(
+    255,
+    255,
+    255,
+    0.12
+  ); /* App tile border 3488:21966 */
+  --raw-integrations-color-active-border: rgba(
+    255,
+    129,
+    88,
+    0.55
+  ); /* App / stripe border 3488:21969 */
+  /* App / stripe fill 3488:21969: rgba(247, 135, 81,.18) → #0e0f0d, top → bottom.
+     Figma lerps colour and alpha separately (unpremultiplied); CSS interpolates
+     premultiplied, so Figma's own colour is pinned every 12.5% (≤1 level error). */
+  --raw-integrations-gradient-active: linear-gradient(
+    to bottom,
+    rgba(247, 135, 81, 0.18) 0%,
+    rgba(176.75, 218, 72.5, 0.2825) 12.5%,
+    rgba(153.189, 65, 5, 0.385) 25%,
+    rgba(130.25, 160, 55.5, 0.4875) 37.5%,
+    rgba(131, 74, 47, 0.59) 50%,
+    rgba(83.75, 102, 38.5, 0.6925) 62.5%,
+    rgba(60.73, 27, 4, 0.795) 75%,
+    rgba(37.25, 44, 21.5, 0.8975) 87.5%,
+    rgb(14, 15, 13) 100%
+  );
+  --raw-integrations-color-rail: #c2c2c2; /* Rail 3888:5786, grey end of its gradient */
+  --raw-integrations-alpha-rail: 0.35; /* both gradient ends are at 35% */
+  --raw-integrations-radius-tile: 1rem; /* 16 */
+  --raw-integrations-blur-tile: 0.5rem; /* Figma background blur 3 — CSS needs ~8 to frost the rail out the way Figma renders it */
+  --raw-integrations-letter-spacing-initials: 0.0625rem; /* 1 */
+  --raw-integrations-font-size-initials-390: 0.75rem; /* 12 — tile initials at 390 (3893:3064) */
+}
+
+/* TIER 2 — SEMANTIC */
+:root {
+  --integrations-tile-from: var(--raw-color-white-a06);
+  --integrations-tile-to: var(--raw-integrations-color-tile-to);
+  --integrations-tile-border: var(--raw-integrations-color-tile-border);
+  --integrations-active-border: var(--raw-integrations-color-active-border);
+  --integrations-active-fill: var(--raw-integrations-gradient-active);
+  --integrations-rail-idle: var(--raw-integrations-color-rail);
+  --integrations-rail-alpha: var(--raw-integrations-alpha-rail);
+  --integrations-rail-lit: var(
+    --accent
+  ); /* the rail's lime peak under the packet */
+  --integrations-corner-tile: var(--raw-integrations-radius-tile);
+  --integrations-frost-tile: var(--raw-integrations-blur-tile);
+  --integrations-spacing-initials: var(
+    --raw-integrations-letter-spacing-initials
+  );
+  --integrations-type-initials-390: var(
+    --raw-integrations-font-size-initials-390
+  );
+}
+
+/* THEME BINDINGS */
+@theme inline {
+  --color-integrations-tile-from: var(--integrations-tile-from);
+  --color-integrations-tile-to: var(--integrations-tile-to);
+  --color-integrations-tile-border: var(--integrations-tile-border);
+  --color-integrations-active-border: var(--integrations-active-border);
+  --radius-integrations-tile: var(--integrations-corner-tile);
+  --blur-integrations-tile: var(--integrations-frost-tile);
+  --tracking-integrations-initials: var(--integrations-spacing-initials);
+  --text-integrations-initials-390: var(--integrations-type-initials-390);
+}

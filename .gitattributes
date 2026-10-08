@@ -1,0 +1,3 @@
+*.sh text eol=lf
+*.nr text eol=lf
+Nargo.toml text eol=lf

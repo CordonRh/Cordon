@@ -1,0 +1,129 @@
+/* footer section tokens — same three tiers as src/app/globals.css.
+   Names are prefixed with the section (--raw-footer-*, --footer-*, --<tw-namespace>-footer-*).
+   Shared tokens live in globals.css; do not redefine them here. */
+
+/* TIER 1 — primitives */
+:root {
+  --raw-footer-color-panel-from: #202326; /* Brand panel 3488:22873 gradient 0% */
+  --raw-footer-color-panel-via: #111214; /* 55% */
+  --raw-footer-color-panel-to: #0a0b0c; /* 100% */
+  --raw-footer-color-white-a12: rgba(255, 255, 255, 0.12); /* Brand panel border */
+  --raw-footer-color-white-a14: rgba(255, 255, 255, 0.14); /* panel hairline 3488:22895, social chip border */
+  --raw-footer-color-white-a09: rgba(255, 255, 255, 0.09); /* page hairlines 3488:22904 / 22921 */
+  --raw-footer-color-white-a80: rgba(255, 255, 255, 0.8); /* social chip label */
+  --raw-footer-color-white-a25: rgba(255, 255, 255, 0.25); /* logo mark border 3488:22891 */
+  --raw-footer-color-mark-from: #ffb38f; /* logo mark gradient 0% */
+  --raw-footer-color-ink-a45: rgba(11, 9, 9, 0.45); /* Work email placeholder 3488:22901 */
+  --raw-footer-color-ink-a50: rgba(11, 9, 9, 0.5); /* what now 3488:22897 */
+  --raw-footer-color-ink-a60: rgba(11, 9, 9, 0.6); /* CTA copy 3488:22899 */
+  --raw-footer-color-signup: #fafbfc; /* Signup 3488:22900 */
+  --raw-footer-color-ink-a15: rgba(11, 9, 9, 0.15); /* Signup focus ring (motion) */
+
+  --raw-footer-font-size-36: 2.25rem; /* CTA title 3488:22898 */
+  --raw-footer-font-size-40: 2.5rem; /* CTA title serif word */
+  --raw-footer-font-size-32: 2rem; /* CTA title at 1024 / 390 — 3888:11497 / 3954:723, serif word included */
+  --raw-footer-font-size-26: 1.625rem; /* CTA title at 768 — 3876:125 */
+  --raw-footer-line-height-52: 3.25rem;
+  --raw-footer-line-height-42: 2.625rem;
+  --raw-footer-line-height-34: 2.125rem;
+  --raw-footer-line-height-26: 1.625rem; /* wordmark at 768 — 3876:109 */
+  --raw-footer-letter-spacing-1: 0.0625rem; /* stay in touch 3488:22881 */
+
+  --raw-footer-radius-24: 1.5rem; /* panels 3888:7058 / 7082 */
+  --raw-footer-radius-8: 0.5rem; /* logo marks 28 + 26, social chip */
+  --raw-footer-radius-4: 0.25rem; /* social chip at 390 — 3954:713 */
+}
+
+/* TIER 2 — semantic */
+:root {
+  --footer-panel-from: var(--raw-footer-color-panel-from);
+  --footer-panel-via: var(--raw-footer-color-panel-via);
+  --footer-panel-to: var(--raw-footer-color-panel-to);
+  --footer-panel-border: var(--raw-footer-color-white-a12);
+  --footer-panel-hairline: var(--raw-footer-color-white-a14);
+  --footer-social-fill: var(--raw-color-white-a10);
+  --footer-social-border: var(--raw-footer-color-white-a14);
+  --footer-social-label: var(--raw-footer-color-white-a80);
+  --footer-hairline: var(--raw-footer-color-white-a09);
+  --footer-mark-border: var(--raw-footer-color-white-a25);
+  --footer-mark-from: var(--raw-footer-color-mark-from);
+  --footer-mark-to: var(--raw-color-lime-400);
+  --footer-ink-placeholder: var(--raw-footer-color-ink-a45);
+  --footer-ink-eyebrow: var(--raw-footer-color-ink-a50);
+  --footer-ink-copy: var(--raw-footer-color-ink-a60);
+  --footer-signup-fill: var(--raw-footer-color-signup);
+  --footer-signup-ring: var(--raw-footer-color-ink-a15);
+
+  --footer-type-cta-title: var(--raw-footer-font-size-36);
+  --footer-type-cta-accent: var(--raw-footer-font-size-40);
+  --footer-line-cta-title: var(--raw-footer-line-height-52);
+  --footer-type-wordmark: var(--raw-font-size-20);
+  --footer-line-wordmark: var(--raw-line-height-28);
+  --footer-letter-spacing-mono: var(--raw-footer-letter-spacing-1);
+
+  --footer-corner-panel: var(--raw-footer-radius-24);
+  --footer-corner-mark: var(--raw-footer-radius-8);
+  --footer-corner-chip: var(--raw-footer-radius-8);
+}
+
+/* THEME BINDINGS */
+@theme inline {
+  --color-footer-panel-from: var(--footer-panel-from);
+  --color-footer-panel-via: var(--footer-panel-via);
+  --color-footer-panel-to: var(--footer-panel-to);
+  --color-footer-panel-border: var(--footer-panel-border);
+  --color-footer-panel-hairline: var(--footer-panel-hairline);
+  --color-footer-social-fill: var(--footer-social-fill);
+  --color-footer-social-border: var(--footer-social-border);
+  --color-footer-social-label: var(--footer-social-label);
+  --color-footer-hairline: var(--footer-hairline);
+  --color-footer-mark-border: var(--footer-mark-border);
+  --color-footer-mark-from: var(--footer-mark-from);
+  --color-footer-mark-to: var(--footer-mark-to);
+  --color-footer-ink-placeholder: var(--footer-ink-placeholder);
+  --color-footer-ink-eyebrow: var(--footer-ink-eyebrow);
+  --color-footer-ink-copy: var(--footer-ink-copy);
+  --color-footer-signup-fill: var(--footer-signup-fill);
+  --color-footer-signup-ring: var(--footer-signup-ring);
+
+  --text-footer-cta-title: var(--footer-type-cta-title);
+  --text-footer-cta-accent: var(--footer-type-cta-accent);
+  --leading-footer-cta-title: var(--footer-line-cta-title);
+  --text-footer-wordmark: var(--footer-type-wordmark);
+  --leading-footer-wordmark: var(--footer-line-wordmark);
+  --tracking-footer-mono: var(--footer-letter-spacing-mono);
+
+  --radius-footer-panel: var(--footer-corner-panel);
+  --radius-footer-mark: var(--footer-corner-mark);
+  --radius-footer-chip: var(--footer-corner-chip);
+}
+
+/* FRAME VALUES — unlayered so they win over the :root defaults above.
+   CTA title: 36 + serif 40 / 52 at 1440; 32 / 42 at 1024 and 390; 26 / 34 at 768.
+   Wordmark drops to 18 / 26 only at 768. Social chips square off to 4 at 390. */
+@media (width <= 1200px) {
+  :root {
+    --footer-type-cta-title: var(--raw-footer-font-size-32);
+    --footer-type-cta-accent: var(--raw-footer-font-size-32);
+    --footer-line-cta-title: var(--raw-footer-line-height-42);
+  }
+}
+@media (width <= 900px) {
+  :root {
+    --footer-type-cta-title: var(--raw-footer-font-size-26);
+    --footer-type-cta-accent: var(--raw-footer-font-size-26);
+    --footer-line-cta-title: var(--raw-footer-line-height-34);
+    --footer-type-wordmark: var(--raw-font-size-18);
+    --footer-line-wordmark: var(--raw-footer-line-height-26);
+  }
+}
+@media (width <= 580px) {
+  :root {
+    --footer-type-cta-title: var(--raw-footer-font-size-32);
+    --footer-type-cta-accent: var(--raw-footer-font-size-32);
+    --footer-line-cta-title: var(--raw-footer-line-height-42);
+    --footer-type-wordmark: var(--raw-font-size-20);
+    --footer-line-wordmark: var(--raw-line-height-28);
+    --footer-corner-chip: var(--raw-footer-radius-4);
+  }
+}

@@ -1,0 +1,26 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="518" height="240" viewBox="0 0 518 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Wires">
+<path id="Vector" d="M64 140H259" stroke="url(#paint0_linear_0_6)"/>
+<path id="Vector_2" d="M259 140H454" stroke="url(#paint1_linear_0_6)"/>
+<path id="Vector_3" d="M139 66L259 140" stroke="url(#paint2_linear_0_6)" stroke-dasharray="2 7"/>
+<path id="Vector_4" d="M259 140L379 66" stroke="url(#paint3_linear_0_6)" stroke-dasharray="2 7"/>
+</g>
+<defs>
+<linearGradient id="paint0_linear_0_6" x1="64" y1="140.5" x2="259" y2="140.5" gradientUnits="userSpaceOnUse">
+<stop stop-color="#ff8158" stop-opacity="0.12"/>
+<stop offset="1" stop-color="#ff8158" stop-opacity="0.6"/>
+</linearGradient>
+<linearGradient id="paint1_linear_0_6" x1="259" y1="140.5" x2="454" y2="140.5" gradientUnits="userSpaceOnUse">
+<stop stop-color="#ff8158" stop-opacity="0.6"/>
+<stop offset="1" stop-color="#ff8158" stop-opacity="0.12"/>
+</linearGradient>
+<linearGradient id="paint2_linear_0_6" x1="139" y1="103" x2="259" y2="103" gradientUnits="userSpaceOnUse">
+<stop stop-color="#ff8158" stop-opacity="0.12"/>
+<stop offset="1" stop-color="#ff8158" stop-opacity="0.6"/>
+</linearGradient>
+<linearGradient id="paint3_linear_0_6" x1="259" y1="103" x2="379" y2="103" gradientUnits="userSpaceOnUse">
+<stop stop-color="#ff8158" stop-opacity="0.6"/>
+<stop offset="1" stop-color="#ff8158" stop-opacity="0.12"/>
+</linearGradient>
+</defs>
+</svg>

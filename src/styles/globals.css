@@ -1,0 +1,472 @@
+/* `source("../")` limits class detection to `src/` (this file lives in src/app).
+   Without it Tailwind v4 scans the whole repo, where documented class *patterns*
+   like duration-[var(--duration-*)] parse as real candidates and emit CSS
+   warnings. Docs are not a source of utilities. */
+@import "tailwindcss" source("../");
+
+/* Section-scoped tokens — one file per section of the Relay page (Figma 3488:18914).
+   Each file follows the same three tiers as this one, with names prefixed by its
+   section, so sections never collide. Shared tokens stay here. */
+@import "../style/sections/hero.css";
+@import "../style/sections/integrations.css";
+@import "../style/sections/product.css";
+@import "../style/sections/statement.css";
+@import "../style/sections/scale.css";
+@import "../style/sections/signals.css";
+@import "../style/sections/proof.css";
+@import "../style/sections/pricing.css";
+@import "../style/sections/footer.css";
+@import "../style/sections/preloader.css";
+
+/* ---------------------------------------------------------------------------
+   TIER 1 — PRIMITIVES  (`--raw-*`)
+   Raw literal values. The only tier allowed to contain a hex/px/ms literal.
+   Never referenced in markup, never bound into @theme. Rename freely.
+   Grammar: --raw-<category>-<name>[-<shade>]
+   Colour values: Figma variables on Relay 3488:18914 (color/*) plus the
+   literals the frames repeat.
+   --------------------------------------------------------------------------- */
+:root {
+  --raw-color-white: #ffffff;
+  --raw-color-black: #000000;
+  --raw-color-neutral-300: #bababa; /* bottom stop of the display gradient */
+  --raw-color-neutral-200: #d6dadd; /* serif accent word in titles */
+  --raw-color-neutral-400: #9ba0a6; /* color/text-muted */
+  --raw-color-neutral-500: #747980; /* color/text-dim — lifted from #6e7378 (4.23:1) to clear 4.5:1 on the page black */
+  --raw-color-neutral-850: #131416; /* color/surface-2 */
+  --raw-color-neutral-875: #121315; /* badge fill */
+  --raw-color-ink-950: #0b0909; /* text on the lime accent */
+  --raw-color-lime-400: #ff8158; /* accent */
+  --raw-color-lime-300: #ff9565; /* badge dot */
+  --raw-color-lime-100: #ffd1ad; /* color/accent-soft */
+  --raw-color-lime-900: #71321e; /* particle stream, far end (not in Figma) */
+  --raw-color-sky-400: #ffbc86; /* particle stream, second hue (not in Figma) */
+  --raw-color-ink-glass: rgba(8, 9, 10, 0.22); /* glass slab fill (not in Figma) */
+  --raw-blur-slab: 0.75rem; /* 12 — glass slab frost */
+  --raw-color-ink-card-glass: rgba(14, 15, 17, 0.42); /* glass cards (not in Figma) */
+  --raw-blur-card: 1rem; /* 16 — glass card frost */
+
+  --raw-color-white-a04: rgba(255, 255, 255, 0.04);
+  --raw-color-white-a10: rgba(255, 255, 255, 0.1);
+  --raw-color-white-a16: rgba(255, 255, 255, 0.16);
+  --raw-color-white-a22: rgba(255, 255, 255, 0.22);
+  --raw-color-black-a50: rgba(0, 0, 0, 0.5);
+  --raw-color-black-a55: rgba(7, 7, 7, 0.55);
+  --raw-color-white-a05: rgba(
+    255,
+    255,
+    255,
+    0.05
+  ); /* Backdrop top light 3488:20422 */
+  --raw-color-white-a06: rgba(
+    255,
+    255,
+    255,
+    0.06
+  ); /* Backdrop base light 3488:21035 */
+  --raw-color-lime-400-a35: rgba(
+    255,
+    129,
+    88,
+    0.35
+  ); /* Backdrop base line 3488:21036 */
+  --raw-color-white-a70: rgba(
+    255,
+    255,
+    255,
+    0.7
+  ); /* glass button stroke fill on hover (motion brief) */
+  --raw-color-black-a70: rgba(
+    0,
+    0,
+    0,
+    0.7
+  ); /* nav once it leaves the top (motion brief) */
+  --raw-blur-nav: 0.75rem;
+  --raw-radius-nav-menu: 1.5rem; /* 390 menu card (design variant, not in Figma) */
+  --raw-radius-nav-menu-row: 0.875rem;
+  --raw-radius-nav-menu-tile: 0.6875rem;
+  --raw-blur-2: 0.125rem; /* Secondary CTA background blur 3488:21937 */
+
+  --raw-font-size-14: 0.875rem;
+  --raw-font-size-16: 1rem;
+  --raw-font-size-18: 1.125rem;
+  --raw-font-size-20: 1.25rem;
+  --raw-font-size-24: 1.5rem; /* section title at 390 (3893:4291) */
+  --raw-font-size-26: 1.625rem; /* its serif accent at 390 */
+  --raw-font-size-30: 1.875rem; /* section title at 768 (3876:8) */
+  --raw-font-size-32: 2rem; /* its serif accent at 768 */
+  --raw-font-size-36: 2.25rem; /* section title at 1024 (3603:3686) */
+  --raw-font-size-40: 2.5rem; /* its serif accent at 1024 */
+  --raw-font-size-44: 2.75rem;
+  --raw-font-size-50: 3.125rem;
+  --raw-line-height-20: 1.25rem;
+  --raw-line-height-24: 1.5rem;
+  --raw-line-height-28: 1.75rem;
+  --raw-line-height-32: 2rem; /* section title at 390 */
+  --raw-line-height-42: 2.625rem; /* section title at 768 */
+  --raw-line-height-50: 3.125rem; /* section title at 1024 */
+  --raw-line-height-62: 3.875rem;
+  --raw-letter-spacing-minus-2: -0.125rem;
+  --raw-letter-spacing-minus-1: -0.0625rem;
+  --raw-letter-spacing-0-4: 0.025rem;
+
+  --raw-size-page: 90rem; /* Relay frame width, 1440 */
+  --raw-size-page-inset: 5rem; /* 80 — every section's content edge */
+  --raw-size-page-1024: 64rem; /* Relay — 1024 frame width (3603:2) */
+  --raw-size-page-inset-1024: 3rem; /* 48 — content edge at 1024 (928 wide) */
+  --raw-size-page-768: 48rem; /* Relay — 768 frame width (3832:4407) */
+  --raw-size-page-inset-768: 2.5rem; /* 40 — content edge at 768 (688 wide) */
+  --raw-size-page-390: 24.375rem; /* Relay — 390 frame width (3893:2) */
+  --raw-size-page-inset-390: 1.25rem; /* 20 — content edge at 390 (350 wide) */
+  /* extra space between sections — half the frames' ~100–160 gap again, so
+     the rhythm is 1.5× Figma's (design decision, not in Figma) */
+  --raw-size-section-gap: 4.5rem; /* 72 */
+  --raw-size-section-gap-1024: 4rem; /* 64 */
+  --raw-size-section-gap-768: 3.5rem; /* 56 */
+  --raw-size-section-gap-390: 3rem; /* 48 */
+
+  --raw-shadow-float: 0 0.5rem 1.375rem -0.25rem rgba(0, 0, 0, 0.5);
+  --raw-drop-shadow-cta: 0 0.5rem 0.6875rem rgba(0, 0, 0, 0.5); /* CTA 3488:21054 */
+
+  --raw-duration-fast: 150ms;
+  --raw-duration-normal: 250ms;
+}
+
+/* ---------------------------------------------------------------------------
+   TIER 2 — SEMANTIC  (role names, no namespace prefix)
+   Purpose, not appearance. Always `var(--raw-*)` — never a literal.
+   Grammar: --<role>[-<variant>][-<state>]
+   Tailwind owns --text-* / --leading-* / --tracking-*, so the semantic tier
+   uses --type-* / --line-* / --letter-spacing-* for typography.
+   The design is dark-only, so there is no prefers-color-scheme override.
+   --------------------------------------------------------------------------- */
+:root {
+  --background: var(--raw-color-black);
+  --foreground: var(--raw-color-white);
+  --foreground-muted: var(--raw-color-neutral-400);
+  --foreground-dim: var(--raw-color-neutral-500);
+  --title-gradient-from: var(--raw-color-white);
+  --title-gradient-to: var(--raw-color-neutral-300);
+  --title-accent: var(--raw-color-neutral-200);
+
+  --surface-raised: var(--raw-color-neutral-850);
+  --surface-badge: var(--raw-color-neutral-875);
+  --surface-glass: var(--raw-color-white-a04);
+  --surface-status: var(--raw-color-black-a55);
+  --border-subtle: var(--raw-color-white-a10);
+  --border-glass: var(--raw-color-white-a22);
+  --glass-from: var(--raw-color-white-a16);
+  --glass-to: var(--raw-color-white-a04);
+
+  --accent: var(--raw-color-lime-400);
+  --accent-soft: var(--raw-color-lime-100);
+  --accent-marker: var(--raw-color-lime-300);
+  --on-accent: var(--raw-color-ink-950);
+  --backdrop-light: var(--raw-color-white-a05);
+  --backdrop-base-light: var(--raw-color-white-a06);
+  --backdrop-base-light-peak: var(
+    --raw-color-white-a05
+  ); /* 768/390 base light peaks at 55% and fades out (3832:6528) */
+  --backdrop-base-line: var(--raw-color-lime-400-a35);
+
+  /* the page-long particle stream's colour roles (views/home/stream) */
+  --section-gap: var(--raw-size-section-gap);
+
+  --stream-main: var(--accent);
+  --stream-alt: var(--raw-color-sky-400);
+  --stream-core: var(--accent-soft);
+  --stream-deep: var(--raw-color-lime-900);
+  --stream-spark: var(--raw-color-white);
+  /* the frosted slab behind Product → Proof, which the stream reads through */
+  --glass-slab: var(--raw-color-ink-glass);
+  --glass-slab-edge: var(--raw-color-white-a06);
+  --glass-slab-frost: var(--raw-blur-slab);
+  /* cards the stream reads through: Product visuals, Scale, Signals, Pricing */
+  --card-glass: var(--raw-color-ink-card-glass);
+  --card-frost: var(--raw-blur-card);
+
+  --type-label: var(--raw-font-size-14);
+  --type-body: var(--raw-font-size-16);
+  --type-lead: var(--raw-font-size-18);
+  --type-wordmark: var(--raw-font-size-20);
+  --type-section-title: var(--raw-font-size-44);
+  --type-section-title-accent: var(--raw-font-size-50);
+  --line-label: var(--raw-line-height-20);
+  --line-body: var(--raw-line-height-24);
+  --line-lead: var(--raw-line-height-28);
+  --line-section-title: var(--raw-line-height-62);
+  --letter-spacing-title: var(--raw-letter-spacing-minus-2);
+  --letter-spacing-wordmark: var(--raw-letter-spacing-minus-1);
+  --letter-spacing-badge: var(--raw-letter-spacing-0-4);
+
+  --page-width: var(--raw-size-page);
+  --page-inset: var(--raw-size-page-inset);
+  --elevation-float: var(--raw-shadow-float);
+  --elevation-cta: var(--raw-drop-shadow-cta);
+
+  --duration-fast: var(--raw-duration-fast);
+  /* same value; named so class strings don't read as the banned duration-fast utility */
+  --motion-fast: var(--raw-duration-fast);
+  --glass-stroke-active: var(--raw-color-white-a70);
+  --nav-surface-scrolled: var(--raw-color-black-a70);
+  --nav-blur: var(--raw-blur-nav);
+  --nav-menu-corner: var(--raw-radius-nav-menu);
+  --nav-menu-corner-row: var(--raw-radius-nav-menu-row);
+  --nav-menu-corner-tile: var(--raw-radius-nav-menu-tile);
+  --glass-blur: var(--raw-blur-2);
+  --duration-normal: var(--raw-duration-normal);
+}
+
+/* ---------------------------------------------------------------------------
+   THEME BINDINGS — map semantic tokens into Tailwind namespaces.
+   Every entry is exactly `--<tw-namespace>-<role>: var(--<role>)`.
+   `inline` is required: it inlines the var() into each utility, so overrides
+   on the Tier 2 tokens above cascade.
+
+   NOTE: there is NO --duration-* namespace in v4 — durations stay Tier 2 only
+   and are used as duration-[var(--duration-fast)].
+   --------------------------------------------------------------------------- */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-foreground-muted: var(--foreground-muted);
+  --color-foreground-dim: var(--foreground-dim);
+  --color-title-gradient-from: var(--title-gradient-from);
+  --color-title-gradient-to: var(--title-gradient-to);
+  --color-title-accent: var(--title-accent);
+  --color-surface-raised: var(--surface-raised);
+  --color-surface-badge: var(--surface-badge);
+  --color-surface-glass: var(--surface-glass);
+  --color-surface-status: var(--surface-status);
+  --color-border-subtle: var(--border-subtle);
+  --color-border-glass: var(--border-glass);
+  --color-glass-from: var(--glass-from);
+  --color-glass-to: var(--glass-to);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-marker: var(--accent-marker);
+  --color-on-accent: var(--on-accent);
+  --color-backdrop-light: var(--backdrop-light);
+  --color-backdrop-base-light: var(--backdrop-base-light);
+  --color-backdrop-base-light-peak: var(--backdrop-base-light-peak);
+  --color-backdrop-base-line: var(--backdrop-base-line);
+  --spacing-section-gap: var(--section-gap);
+  --color-glass-slab: var(--glass-slab);
+  --color-glass-slab-edge: var(--glass-slab-edge);
+  --blur-glass-slab: var(--glass-slab-frost);
+  --color-card-glass: var(--card-glass);
+  --blur-card: var(--card-frost);
+  --color-glass-stroke-active: var(--glass-stroke-active);
+  --color-nav-surface-scrolled: var(--nav-surface-scrolled);
+  --blur-nav: var(--nav-blur);
+  --radius-nav-menu: var(--nav-menu-corner);
+  --radius-nav-menu-row: var(--nav-menu-corner-row);
+  --radius-nav-menu-tile: var(--nav-menu-corner-tile);
+  --blur-glass: var(--glass-blur);
+
+  --font-sans: var(--font-inter);
+  --font-serif: var(--font-instrument-serif);
+  --font-mono: var(--font-fragment-mono);
+
+  --text-label: var(--type-label);
+  --text-body: var(--type-body);
+  --text-lead: var(--type-lead);
+  --text-wordmark: var(--type-wordmark);
+  --text-section-title: var(--type-section-title);
+  --text-section-title-accent: var(--type-section-title-accent);
+  --leading-label: var(--line-label);
+  --leading-body: var(--line-body);
+  --leading-lead: var(--line-lead);
+  --leading-section-title: var(--line-section-title);
+  --tracking-title: var(--letter-spacing-title);
+  --tracking-wordmark: var(--letter-spacing-wordmark);
+  --tracking-badge: var(--letter-spacing-badge);
+
+  --container-page: var(--page-width);
+  --spacing-page-inset: var(--page-inset);
+  --shadow-float: var(--elevation-float);
+  --drop-shadow-cta: var(--elevation-cta);
+
+  /* Leading floor for clipped TextEngine reveals. */
+  --leading-display: 1.1;
+
+  --ease-entrance: cubic-bezier(0.2, 0, 0, 1);
+}
+
+/* Narrower layouts, written as variants next to the 1440 classes. They are
+   max-width ranges declared widest first, so they cascade: at 390 a `w1024:`
+   class still applies unless a `w768:` or `w390:` one overrides it.
+     w1024  ≤ 1200px  "Relay — 1024" 3888:7141
+     w768   ≤ 900px   "Relay — 768"  3832:4407
+     w390   ≤ 580px   "Relay — 390"  3893:2 */
+@custom-variant w1024 (@media (width <= 1200px));
+@custom-variant w768 (@media (width <= 900px));
+@custom-variant w390 (@media (width <= 580px));
+
+/* Tokens the narrower frames redefine. Unlayered, like the tiers above: a
+   `:root` inside `@layer base` would lose to them. */
+@media (width <= 1200px) {
+  :root {
+    --page-width: var(--raw-size-page-1024);
+    --page-inset: var(--raw-size-page-inset-1024);
+    --section-gap: var(--raw-size-section-gap-1024);
+    /* section titles are 36/50 with a 40 serif accent (3603:3686) */
+    --type-section-title: var(--raw-font-size-36);
+    --type-section-title-accent: var(--raw-font-size-40);
+    --line-section-title: var(--raw-line-height-50);
+  }
+}
+
+@media (width <= 900px) {
+  :root {
+    --page-width: var(--raw-size-page-768);
+    --page-inset: var(--raw-size-page-inset-768);
+    --section-gap: var(--raw-size-section-gap-768);
+    /* section titles are 30/42 with a 32 serif accent (3876:8) */
+    --type-section-title: var(--raw-font-size-30);
+    --type-section-title-accent: var(--raw-font-size-32);
+    --line-section-title: var(--raw-line-height-42);
+  }
+}
+
+@media (width <= 580px) {
+  :root {
+    --page-width: var(--raw-size-page-390);
+    --page-inset: var(--raw-size-page-inset-390);
+    --section-gap: var(--raw-size-section-gap-390);
+    /* section titles are 24/32 with a 26 serif accent (3893:4291) */
+    --type-section-title: var(--raw-font-size-24);
+    --type-section-title-accent: var(--raw-font-size-26);
+    --line-section-title: var(--raw-line-height-32);
+  }
+}
+
+@layer base {
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-inter), sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Adaptive scaling grid — four Figma frames, each owning a viewport range:
+     1440 above 1200px, 1024 to 901px, 768 to 581px and 390 below. At each
+     reference width 1 rem = 16px, so the frames render 1:1.
+       font-size: 16 * 100 / baseWidth  (vw)
+     Below its reference width a frame scales down with the viewport; above
+     it the frame never grows (the rem is capped at 16px) and the page column
+     (`w-page`) centres instead. The 1440 frame alone keeps growing, up to
+     1920 (21.333px), then centres too. Keep in sync with
+     src/components/common/grid/grid.config.ts. */
+  html {
+    font-size: min(1.111111vw, 21.333333px); /* 16 * 100 / 1440, ≤ 1920 */
+  }
+
+  @media (width <= 1200px) {
+    html {
+      font-size: min(1.5625vw, 16px); /* 16 * 100 / 1024 */
+    }
+  }
+
+  @media (width <= 900px) {
+    html {
+      font-size: min(2.083333vw, 16px); /* 16 * 100 / 768 */
+    }
+  }
+
+  @media (width <= 580px) {
+    html {
+      font-size: min(4.102564vw, 16px); /* 16 * 100 / 390 */
+    }
+  }
+
+  body {
+    overflow-x: clip;
+  }
+}
+
+@layer utilities {
+}
+
+@layer components {
+  /* A 1px ring painted by the element's background — for strokes that fill
+     along their length (glass buttons, pricing cards). */
+  .stroke-ring {
+    padding: 1px;
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+  }
+
+  /* Statement iris "logo to logo" (views/home/transitions/logo-open.tsx, brief t3/t4).
+     The transition writes plain numbers, all 0…1: --pop (the lime Relay logo
+     appears where the plate's Mark sits), --grow (the plate opened out of it)
+     and --flying (the logo has left for 06 Scale); and, measured from the
+     plate's own Mark at every width, its centre (--mx, --my) and size
+     (--msize). */
+  .logo-open {
+    --pop: 0;
+    --grow: 0;
+    --flying: 0;
+    --shift: 0px;
+    --mx: 50%;
+    --my: 50%;
+    --msize: 4.75rem;
+    /* hidden until the transition writes its clip-path (the fold into the
+       logo tile) — see `fold()` in logo-open.tsx */
+    clip-path: inset(50%);
+  }
+
+  [data-reduced="true"] > .logo-open {
+    clip-path: none;
+  }
+
+  /* The logo tile the plate opens out of and folds back into — the plate's
+     own Mark (3888:5969 Mark): dark 135° gradient, hairline, lime chevrons.
+     Corner 24/76 of the tile, so it scales with the measured size. */
+  .logo-open-mark,
+  .logo-open-fly {
+    display: block;
+    overflow: hidden;
+    border-radius: 31.58%;
+    border: 1px solid var(--statement-mark-border);
+    background: linear-gradient(
+      135deg in srgb,
+      var(--statement-mark-from),
+      var(--on-accent) 71.429%
+    );
+    pointer-events: none;
+  }
+
+  .logo-open-mark {
+    position: absolute;
+    left: calc(var(--mx) - var(--msize) / 2);
+    top: calc(var(--my) - var(--msize) / 2);
+    width: var(--msize);
+    height: var(--msize);
+    /* shown once popped; dissolves into the plate as it opens,
+       comes back as the plate folds into it, hands over to the flying copy */
+    opacity: calc(
+      min(var(--pop), clamp(0, calc(1 - (var(--grow) - 0.06) / 0.12), 1)) *
+        (1 - var(--flying))
+    );
+    /* never above 1: it sits exactly over the plate's own Mark, so the two
+       never show as a doubled tile */
+    transform: translateY(var(--shift)) scale(calc(0.6 + var(--pop) * 0.4));
+  }
+
+  [data-reduced="true"] .logo-open-mark {
+    display: none;
+  }
+
+  .logo-open-fly {
+    position: absolute;
+    inset: 0;
+  }
+
+  /* The lime cursor ring glides after the native cursor; the system cursor
+     is never hidden (client call, 2026-09-26). */
+}

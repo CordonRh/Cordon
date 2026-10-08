@@ -1,0 +1,7 @@
+<svg width="228" height="57" viewBox="0 0 228 57" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Wires 390">
+<path id="Rail" d="M1 55.75H227" stroke="#C2C2C2" stroke-opacity="0.35"/>
+<path id="Spoke" d="M20 1L88 32" stroke="#999EA3" stroke-opacity="0.55" stroke-dasharray="2.05 7.19"/>
+<path id="Spoke_2" d="M208 1L140 32" stroke="#999EA3" stroke-opacity="0.55" stroke-dasharray="2.05 7.19"/>
+</g>
+</svg>

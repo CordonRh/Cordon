@@ -1,0 +1,6 @@
+[package]
+name = "bundle"
+type = "bin"
+
+[dependencies]
+cordon = { path = "../lib" }

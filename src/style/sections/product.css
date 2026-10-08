@@ -1,0 +1,129 @@
+/* product section tokens — same three tiers as src/app/globals.css.
+   Names are prefixed with the section (--raw-product-*, --product-*, --<tw-namespace>-product-*).
+   Shared tokens live in globals.css; do not redefine them here. */
+
+/* TIER 1 — RAW */
+:root {
+  --raw-product-color-hairline: rgba(255, 255, 255, 0.09); /* Hairline 3488:21998, axis 3488:22023 */
+  --raw-product-color-card: #0c0d0e; /* Visual fill 3488:22004 */
+  --raw-product-color-card-border: rgba(255, 255, 255, 0.07); /* Visual border + rule 3488:22007 */
+  --raw-product-color-trace-rule: rgba(255, 255, 255, 0.05); /* Hairline 3488:22011 */
+  --raw-product-color-chart-baseline: rgba(255, 255, 255, 0.08); /* Baseline 3488:22115 */
+  --raw-product-color-index: rgba(247, 135, 81, 0.4); /* Row number 3488:22001 */
+  --raw-product-color-span-from: #c46435; /* Span gradient start 3488:22009 */
+  --raw-product-color-span-short: rgba(255, 255, 255, 0.8); /* Span 3488:22013 */
+  --raw-product-color-pending: rgba(247, 135, 81, 0.18); /* Pending fill 3488:22021 */
+  --raw-product-color-pending-border: rgba(247, 135, 81, 0.55); /* Pending border 3488:22021 */
+  --raw-product-color-baseline-today: rgba(247, 135, 81, 0.45); /* Baseline / today 3529:2 */
+  --raw-product-font-size-26: 1.625rem; /* Row title 3488:22002 */
+  --raw-product-font-size-24: 1.5rem; /* Row title at 1024 (3603:3154) */
+  --raw-product-font-size-20: 1.25rem; /* Row title at 768 (3832:7499) */
+  --raw-product-font-size-18: 1.125rem; /* Row title at 390 (3893:3099) */
+  --raw-product-font-size-14: 0.875rem; /* card mono, mini button */
+  --raw-product-font-size-13: 0.8125rem; /* mini button at 390 (3893:3195) */
+  --raw-product-font-size-12: 0.75rem; /* card mono at 390 (3893:3103) */
+  --raw-product-line-height-32: 2rem;
+  --raw-product-line-height-28: 1.75rem; /* Row title at 768 */
+  --raw-product-line-height-24: 1.5rem; /* Row title at 390 */
+  --raw-product-line-height-20: 1.25rem; /* card lines */
+  --raw-product-line-height-18: 1.125rem; /* card lines at 390 */
+  --raw-product-line-height-16: 1rem; /* mini button at 390 */
+  --raw-product-letter-spacing-index: 0.0625rem; /* 1 */
+  --raw-product-radius-card: 1.625rem; /* 26 */
+  --raw-product-radius-card-1024: 1.12890625rem; /* 18.063 — Visual 3703:2 */
+  --raw-product-radius-span: 0.25rem; /* 4 */
+  --raw-product-radius-span-1024: 0.1736875rem; /* 2.779 — Span 3703:7 */
+  --raw-product-radius-card-768: 1.5rem; /* 24 — Visual 3849:2, 3893:3101 */
+  --raw-product-radius-span-390: 0.125rem; /* 2 — Span 3893:3127 */
+  --raw-product-radius-button: 0.5rem; /* 8 — Mini button 3488:22064 */
+  --raw-product-radius-button-390: 0.25rem; /* 4 — Mini button 3893:3192 */
+}
+
+/* TIER 2 — SEMANTIC */
+:root {
+  --product-hairline: var(--raw-product-color-hairline);
+  --product-card: var(--card-glass); /* glass (not in Figma): was the raw fill */
+  --product-card-border: var(--raw-product-color-card-border);
+  --product-trace-rule: var(--raw-product-color-trace-rule);
+  --product-chart-baseline: var(--raw-product-color-chart-baseline);
+  --product-tick: var(--raw-color-white-a16);
+  --product-index: var(--raw-product-color-index);
+  --product-span-from: var(--raw-product-color-span-from);
+  --product-span-short: var(--raw-product-color-span-short);
+  --product-pending: var(--raw-product-color-pending);
+  --product-pending-border: var(--raw-product-color-pending-border);
+  --product-baseline-today: var(--raw-product-color-baseline-today);
+  --product-type-row-title: var(--raw-product-font-size-26);
+  --product-line-row-title: var(--raw-product-line-height-32);
+  --product-letter-spacing-row-title: var(--raw-letter-spacing-minus-1);
+  --product-type-card: var(--raw-product-font-size-14);
+  --product-line-card: var(--raw-product-line-height-20);
+  --product-type-button: var(--raw-product-font-size-14);
+  --product-line-button: var(--raw-product-line-height-20);
+  --product-letter-spacing-index: var(--raw-product-letter-spacing-index);
+  --product-corner-card: var(--raw-product-radius-card);
+  --product-corner-span: var(--raw-product-radius-span);
+  --product-corner-button: var(--raw-product-radius-button);
+}
+
+/* The 1024 frame keeps the palette but redraws the cards at 0.695 of their
+   1440 size, and drops the row title a step (04 Product 3603:3069). */
+@media (width <= 1200px) {
+  :root {
+    --product-type-row-title: var(--raw-product-font-size-24);
+    --product-corner-card: var(--raw-product-radius-card-1024);
+    --product-corner-span: var(--raw-product-radius-span-1024);
+  }
+}
+
+/* 768 (3832:7487): rows stack copy over a centred 528 card, title 20/28,
+   cards r24. */
+@media (width <= 900px) {
+  :root {
+    --product-type-row-title: var(--raw-product-font-size-20);
+    --product-line-row-title: var(--raw-product-line-height-28);
+    --product-corner-card: var(--raw-product-radius-card-768);
+  }
+}
+
+/* 390 (3893:3087): 350-wide cards, card text drops to 12 mono / 14 sans on
+   18 lines, mini buttons 13/16 r4, title 18/24. */
+@media (width <= 580px) {
+  :root {
+    --product-type-row-title: var(--raw-product-font-size-18);
+    --product-line-row-title: var(--raw-product-line-height-24);
+    --product-type-card: var(--raw-product-font-size-12);
+    --product-line-card: var(--raw-product-line-height-18);
+    --product-type-button: var(--raw-product-font-size-13);
+    --product-line-button: var(--raw-product-line-height-16);
+    --product-corner-span: var(--raw-product-radius-span-390);
+    --product-corner-button: var(--raw-product-radius-button-390);
+  }
+}
+
+/* THEME BINDINGS */
+@theme inline {
+  --color-product-hairline: var(--product-hairline);
+  --color-product-card: var(--product-card);
+  --color-product-card-border: var(--product-card-border);
+  --color-product-trace-rule: var(--product-trace-rule);
+  --color-product-chart-baseline: var(--product-chart-baseline);
+  --color-product-tick: var(--product-tick);
+  --color-product-index: var(--product-index);
+  --color-product-span-from: var(--product-span-from);
+  --color-product-span-short: var(--product-span-short);
+  --color-product-pending: var(--product-pending);
+  --color-product-pending-border: var(--product-pending-border);
+  --color-product-baseline-today: var(--product-baseline-today);
+  --text-product-row-title: var(--product-type-row-title);
+  --leading-product-row-title: var(--product-line-row-title);
+  --tracking-product-row-title: var(--product-letter-spacing-row-title);
+  --tracking-product-index: var(--product-letter-spacing-index);
+  --text-product-small: var(--product-type-card);
+  --leading-product-small: var(--product-line-card);
+  --text-product-mini: var(--product-type-button);
+  --leading-product-mini: var(--product-line-button);
+  --radius-product-card: var(--product-corner-card);
+  --radius-product-span: var(--product-corner-span);
+  --radius-product-button: var(--product-corner-button);
+}

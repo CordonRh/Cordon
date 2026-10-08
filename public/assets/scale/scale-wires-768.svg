@@ -1,0 +1,7 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="304" height="86" viewBox="-1 -1 304 86" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Wires 768">
+<path id="Rail" d="M0 84H302" stroke="#C2C2C2" stroke-opacity="0.35"/>
+<path id="Spoke" d="M64 0L151 84" stroke="#999EA3" stroke-opacity="0.55" stroke-dasharray="2 7"/>
+<path id="Spoke_2" d="M238 0L151 84" stroke="#999EA3" stroke-opacity="0.55" stroke-dasharray="2 7"/>
+</g>
+</svg>

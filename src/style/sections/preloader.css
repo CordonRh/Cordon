@@ -1,0 +1,31 @@
+/* preloader tokens — same three tiers as src/app/globals.css.
+   The plate grows out of the Relay logo tile (the Statement mark). */
+
+/* TIER 1 — primitives */
+:root {
+  --raw-preloader-size-mark: 4.75rem; /* 76 — the Statement mark tile */
+}
+
+/* TIER 2 — semantic */
+:root {
+  --preloader-mark-size: var(--raw-preloader-size-mark);
+}
+
+/* TIER 3 — Tailwind theme */
+@theme inline {
+  --spacing-preloader-mark: var(--preloader-mark-size);
+}
+
+/* Set by the inline head script before first paint (home only, motion
+   allowed): the overlay shows from the server HTML, the page does not
+   scroll, and the page waits off-screen so no entrance plays before the
+   lime folds back to reveal it. */
+html[data-preload] {
+  overflow: hidden;
+}
+html[data-preload] main {
+  transform: translateY(200vh);
+}
+html[data-preload] [data-preloader] {
+  display: block;
+}

@@ -1,0 +1,9 @@
+<svg width="680" height="624" viewBox="0 0 680 624" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+<!-- Canvas grid 3542:24366 — 812 dots (2 × 1.75) on a 24 × 21.0337 pitch from (15, 13.146), fill #A6A6A6 @ .14 in a .35 group. -->
+<defs>
+<pattern id="hero-canvas-dot" x="4" y="3.50562" width="24" height="21.03371" patternUnits="userSpaceOnUse">
+<ellipse cx="12" cy="10.51685" rx="1" ry="0.87640" fill="#A6A6A6" fill-opacity="0.14"/>
+</pattern>
+</defs>
+<rect x="0" y="0" width="680" height="614" fill="url(#hero-canvas-dot)" opacity="0.35"/>
+</svg>

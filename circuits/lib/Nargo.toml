@@ -1,0 +1,6 @@
+[package]
+name = "cordon"
+type = "lib"
+
+[dependencies]
+poseidon = { path = "../vendor/poseidon" }

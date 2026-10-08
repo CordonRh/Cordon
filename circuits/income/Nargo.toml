@@ -1,0 +1,6 @@
+[package]
+name = "income"
+type = "bin"
+
+[dependencies]
+cordon = { path = "../lib" }

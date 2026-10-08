@@ -1,0 +1,140 @@
+/* pricing section tokens — same three tiers as src/app/globals.css.
+   Names are prefixed with the section (--raw-pricing-*, --pricing-*, --<tw-namespace>-pricing-*).
+   Shared tokens live in globals.css; do not redefine them here. */
+
+/* TIER 1 — primitives (09 Pricing 3488:22781) */
+:root {
+  --raw-pricing-color-card: #0c0d0e; /* Run meter 3488:22789, tiers 3488:22810 */
+  --raw-pricing-color-card-border: rgba(255, 255, 255, 0.07);
+  --raw-pricing-color-track: rgba(255, 255, 255, 0.08); /* Track 3488:22792 */
+  --raw-pricing-color-fill-from: rgba(247, 135, 81, 0.35); /* Filled 3488:22793 */
+  --raw-pricing-color-fill-to: rgba(247, 135, 81, 0.95);
+  --raw-pricing-color-tick: rgba(255, 255, 255, 0.14); /* Tick 3488:22795 */
+  --raw-pricing-color-tick-active: rgba(255, 255, 255, 0.3); /* Tick 3488:22797 */
+  --raw-pricing-color-hairline: rgba(255, 255, 255, 0.09); /* Rule 3488:22801 (the tier-card hairline above the buttons was removed from the design) */
+  --raw-pricing-color-button: rgba(255, 255, 255, 0.07); /* Tier button 3488:22827 */
+  --raw-pricing-color-button-border: rgba(255, 255, 255, 0.16);
+  --raw-pricing-color-button-text: #f4f5f6;
+  --raw-pricing-color-button-shade: rgba(0, 0, 0, 0.55); /* Tier button 3488:22827 drop shadow */
+  /* Tier / Team stroke: linear lime 0.5 @0 -> white 0.07 @60% -> white 0.07, diagonal
+     (gradientTransform [[.5,.5,0],[-.5,.5,.5]] = CSS "to bottom right"). Figma lerps rgb and alpha
+     separately; stops are pre-composited over the card fill every 10% so CSS interpolates opaque sRGB.
+     Painted as a 1px .stroke-ring that slides to the selected plan's card. */
+  --raw-pricing-featured-stroke: linear-gradient(
+    to bottom right in srgb,
+    #824b30 0%,
+    #724a37 10%,
+    #61473b 20%,
+    #51413a 30%,
+    #403834 40%,
+    #2d2f2c 50%,
+    #1d1e1f 60%,
+    #1d1e1f 100%
+  );
+  --raw-pricing-color-check: #a7a7a7; /* tier list check icon */
+  --raw-pricing-color-check-light: #9ba0a6; /* Team list check icon */
+  /* Tier button shadow sits behind the 7% glass fill (showShadowBehindNode) — drawn as a blurred
+     layer: rect inset by the -4 spread, offset y10, blur 26 -> sigma 13. */
+  --raw-pricing-blur-button-shade: 0.8125rem; /* 13 */
+
+  --raw-pricing-font-size-price: 2.75rem; /* 44 */
+  --raw-pricing-line-height-price: 3rem; /* 48 */
+
+  --raw-pricing-radius-card: 1.875rem; /* 30 */
+  --raw-pricing-radius-card-sm: 1.5rem; /* 24 — 768 / 390 (3876:11, 3950:695) */
+  --raw-pricing-radius-tag: 0.5rem; /* Tag 3488:22845 */
+
+  /* Team card button (3488:22829): lime glow only — its dark drop shadow is the shared CTA one */
+  --raw-pricing-shadow-button-glow: 0 0 1.125rem 0 rgba(248, 132, 75, 0.18);
+  --raw-pricing-shadow-featured:
+    0 0 1.5rem 0 rgba(248, 132, 75, 0.12), 0 1.125rem 2.75rem -0.625rem rgba(0, 0, 0, 0.6);
+}
+
+/* TIER 2 — semantic */
+:root {
+  --pricing-card: var(--card-glass); /* glass (not in Figma): was the raw fill */
+  --pricing-card-border: var(--raw-pricing-color-card-border);
+  --pricing-track: var(--raw-pricing-color-track);
+  --pricing-fill-from: var(--raw-pricing-color-fill-from);
+  --pricing-fill-to: var(--raw-pricing-color-fill-to);
+  --pricing-tick: var(--raw-pricing-color-tick);
+  --pricing-tick-active: var(--raw-pricing-color-tick-active);
+  --pricing-hairline: var(--raw-pricing-color-hairline);
+  --pricing-button: var(--raw-pricing-color-button);
+  --pricing-button-border: var(--raw-pricing-color-button-border);
+  --pricing-button-text: var(--raw-pricing-color-button-text);
+  --pricing-button-shade: var(--raw-pricing-color-button-shade);
+  --pricing-featured-stroke: var(--raw-pricing-featured-stroke);
+  --pricing-check: var(--raw-pricing-color-check);
+  --pricing-check-light: var(--raw-pricing-color-check-light);
+  --pricing-blur-button-shade: var(--raw-pricing-blur-button-shade);
+
+  --pricing-type-price: var(--raw-pricing-font-size-price);
+  --pricing-line-price: var(--raw-pricing-line-height-price);
+  /* meter question + plan name */
+  --pricing-type-question: var(--raw-font-size-20);
+  --pricing-line-question: var(--raw-line-height-28);
+
+  --pricing-corner-card: var(--raw-pricing-radius-card);
+  --pricing-corner-tag: var(--raw-pricing-radius-tag);
+
+  --pricing-elevation-button-glow: var(--raw-pricing-shadow-button-glow);
+  --pricing-elevation-featured: var(--raw-pricing-shadow-featured);
+}
+
+/* THEME BINDINGS */
+@theme inline {
+  --color-pricing-card: var(--pricing-card);
+  --color-pricing-card-border: var(--pricing-card-border);
+  --color-pricing-track: var(--pricing-track);
+  --color-pricing-fill-from: var(--pricing-fill-from);
+  --color-pricing-fill-to: var(--pricing-fill-to);
+  --color-pricing-tick: var(--pricing-tick);
+  --color-pricing-tick-active: var(--pricing-tick-active);
+  --color-pricing-hairline: var(--pricing-hairline);
+  --color-pricing-button: var(--pricing-button);
+  --color-pricing-button-border: var(--pricing-button-border);
+  --color-pricing-button-text: var(--pricing-button-text);
+  --color-pricing-button-shade: var(--pricing-button-shade);
+  --color-pricing-check: var(--pricing-check);
+  --color-pricing-check-light: var(--pricing-check-light);
+  --blur-pricing-button-shade: var(--pricing-blur-button-shade);
+
+  --text-pricing-price: var(--pricing-type-price);
+  --leading-pricing-price: var(--pricing-line-price);
+  --text-pricing-question: var(--pricing-type-question);
+  --leading-pricing-question: var(--pricing-line-question);
+
+  --radius-pricing-card: var(--pricing-corner-card);
+  --radius-pricing-tag: var(--pricing-corner-tag);
+
+  --shadow-pricing-button-glow: var(--pricing-elevation-button-glow);
+  --shadow-pricing-featured: var(--pricing-elevation-featured);
+}
+
+/* The 1024 frame (3603:4196) sets plan prices 36/50 instead of 44/48
+   (Run meter 3603:4220, Tier / Team 3603:4246) — same breakpoint as `w1024:`. */
+@media (width <= 1200px) {
+  :root {
+    --pricing-type-price: var(--raw-font-size-36);
+    --pricing-line-price: var(--raw-line-height-50);
+  }
+}
+
+/* 768 (3876:2): prices stay 36/50 and the question / plan name 20/28 as at
+   1024; cards round 24. */
+@media (width <= 900px) {
+  :root {
+    --pricing-corner-card: var(--raw-pricing-radius-card-sm);
+  }
+}
+
+/* 390 (3893:4285): prices back to 36/50, question and plan name 20/28. */
+@media (width <= 580px) {
+  :root {
+    --pricing-type-price: var(--raw-font-size-36);
+    --pricing-line-price: var(--raw-line-height-50);
+    --pricing-type-question: var(--raw-font-size-20);
+    --pricing-line-question: var(--raw-line-height-28);
+  }
+}

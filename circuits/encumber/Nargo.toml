@@ -1,0 +1,6 @@
+[package]
+name = "encumber"
+type = "bin"
+
+[dependencies]
+cordon = { path = "../lib" }

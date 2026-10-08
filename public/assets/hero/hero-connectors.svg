@@ -1,0 +1,15 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="80" height="180" viewBox="0 0 80 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Connectors" clip-path="url(#clip0_0_17)">
+<path id="Vector" d="M0 10C40 10 40 90 80 90" stroke="url(#paint0_linear_0_17)" stroke-width="2" stroke-linecap="round"/>
+<path id="Vector_2" d="M0 170C40 170 40 90 80 90" stroke="#878787" stroke-opacity="0.6" stroke-width="2" stroke-linecap="round"/>
+</g>
+<defs>
+<linearGradient id="paint0_linear_0_17" x1="0" y1="50" x2="80" y2="50" gradientUnits="userSpaceOnUse">
+<stop stop-color="#ff8158" stop-opacity="0.25"/>
+<stop offset="1" stop-color="#ff8158" stop-opacity="0.95"/>
+</linearGradient>
+<clipPath id="clip0_0_17">
+<rect width="80" height="180" fill="white"/>
+</clipPath>
+</defs>
+</svg>

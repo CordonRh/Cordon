@@ -1,0 +1,8 @@
+{
+  "name": "@cordon/prover-assist",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": { "start": "bun src/server.ts" },
+  "dependencies": { "@cordon/sdk": "workspace:*" }
+}

@@ -1,0 +1,2 @@
+[workspace]
+members = ["lib", "transfer", "bundle", "unbundle", "term", "income", "dvp", "order", "encumber", "unlock", "enforce", "nav"]

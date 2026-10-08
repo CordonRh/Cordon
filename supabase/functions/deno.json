@@ -1,0 +1,4 @@
+{
+  "lock": { "path": "./deno.lock" },
+  "nodeModulesDir": "none"
+}

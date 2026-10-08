@@ -1,0 +1,71 @@
+/* statement section tokens — same three tiers as src/app/globals.css.
+   Names are prefixed with the section (--raw-statement-*, --statement-*, --<tw-namespace>-statement-*).
+   Shared tokens live in globals.css; do not redefine them here. */
+
+/* TIER 1 — RAW */
+:root {
+  --raw-statement-color-plate: #f78852; /* Contrast plate 3492:4 */
+  --raw-statement-color-dot: rgba(11, 9, 9, 0.175111); /* Dot field ellipse 3559:3 */
+  --raw-statement-color-ink-55: rgba(11, 9, 9, 0.55); /* Kicker 3488:22128, ruler labels 3488:22260 */
+  --raw-statement-color-ink-50: rgba(11, 9, 9, 0.5); /* Ruler caption 3488:22259 */
+  --raw-statement-color-mark-border: rgba(11, 9, 9, 0.25); /* Mark border 3488:22130 */
+  --raw-statement-color-mark-from: #252721; /* Mark gradient start 3488:22130 */
+  --raw-statement-color-stem-from: rgba(11, 9, 9, 0.85); /* Drop line 3488:22135 */
+  --raw-statement-color-stem-to: rgba(11, 9, 9, 0.2); /* Drop line 3488:22135 */
+  --raw-statement-radius-plate: 2rem; /* 32 */
+  --raw-statement-radius-mark: 1.5rem; /* 24 */
+  --raw-statement-font-size-12: 0.75rem; /* Kicker at 390 (3893:3603) */
+  --raw-statement-line-height-16: 1rem; /* Kicker at 390 */
+  --raw-statement-line-height-40: 2.5rem; /* Title lines at 768 (3832:7970) */
+}
+
+/* TIER 2 — SEMANTIC */
+:root {
+  --statement-plate: var(--raw-statement-color-plate);
+  --statement-dot: var(--raw-statement-color-dot);
+  --statement-ink-muted: var(--raw-statement-color-ink-55);
+  --statement-ink-caption: var(--raw-statement-color-ink-50);
+  --statement-mark-border: var(--raw-statement-color-mark-border);
+  --statement-mark-from: var(--raw-statement-color-mark-from);
+  --statement-stem-from: var(--raw-statement-color-stem-from);
+  --statement-stem-to: var(--raw-statement-color-stem-to);
+  --statement-flash: var(--raw-statement-color-ink-55);
+  --statement-corner-plate: var(--raw-statement-radius-plate);
+  --statement-corner-mark: var(--raw-statement-radius-mark);
+  --statement-kicker-size: var(--type-label);
+  --statement-kicker-line: var(--line-label);
+  --statement-title-line: var(--line-section-title);
+}
+
+/* TIER 3 — TAILWIND BINDINGS */
+@theme inline {
+  --color-statement-plate: var(--statement-plate);
+  --color-statement-dot: var(--statement-dot);
+  --color-statement-ink-muted: var(--statement-ink-muted);
+  --color-statement-ink-caption: var(--statement-ink-caption);
+  --color-statement-mark-border: var(--statement-mark-border);
+  --color-statement-mark-from: var(--statement-mark-from);
+  --color-statement-stem-from: var(--statement-stem-from);
+  --color-statement-stem-to: var(--statement-stem-to);
+  --color-statement-flash: var(--statement-flash);
+  --radius-statement-plate: var(--statement-corner-plate);
+  --radius-statement-mark: var(--statement-corner-mark);
+  --text-statement-kicker: var(--statement-kicker-size);
+  --leading-statement-kicker: var(--statement-kicker-line);
+  --leading-statement-title: var(--statement-title-line);
+}
+
+/* Frame-specific values — unlayered so they beat the :root defaults above. */
+@media (width <= 900px) {
+  :root {
+    --statement-title-line: var(--raw-statement-line-height-40);
+  }
+}
+
+@media (width <= 580px) {
+  :root {
+    --statement-kicker-size: var(--raw-statement-font-size-12);
+    --statement-kicker-line: var(--raw-statement-line-height-16);
+    --statement-title-line: var(--line-section-title);
+  }
+}

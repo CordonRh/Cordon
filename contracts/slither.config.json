@@ -1,0 +1,8 @@
+{
+  "filter_paths": "lib/|test/|script/|verifiers/|testnet/",
+  "exclude_dependencies": true,
+  "exclude_informational": true,
+  "exclude_low": true,
+  "detectors_to_exclude": "uninitialized-state,divide-before-multiply,incorrect-equality,timestamp,reentrancy-no-eth,reentrancy-benign,reentrancy-events,calls-loop,uninitialized-local,unused-return,missing-zero-check",
+  "_why": "Triaged false positives, see SECURITY.md (Static analysis): ActionEngine.history is filled through a storage reference; rawPrice/CrdnStaking divisions are exact or protocol-favouring; strict equalities and timestamps are intended; engine calls go only to the immutable pool and registered verifiers."
+}

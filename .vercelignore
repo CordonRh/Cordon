@@ -1,0 +1,9 @@
+/contracts
+/circuits
+# Service sources are not part of the app; their manifests stay so the frozen
+# workspace lockfile still matches on Vercel.
+/services/*/*
+!/services/*/package.json
+/supabase/.temp
+/.output
+/.scratch

@@ -1,0 +1,122 @@
+/* signals section tokens — same three tiers as src/app/globals.css.
+   Names are prefixed with the section (--raw-signals-*, --signals-*, --<tw-namespace>-signals-*).
+   Shared tokens live in globals.css; do not redefine them here. */
+
+/* Tier 1 — primitives (07 Signals 3488:22342) */
+:root {
+  /* Widget fill 3488:22351 / stroke */
+  --raw-signals-color-widget: #0c0d0e;
+  --raw-signals-color-widget-border: rgba(255, 255, 255, 0.07);
+  /* Load (today) end stop 3488:22366 */
+  --raw-signals-color-accent-a72: rgba(247, 135, 81, 0.72);
+  /* Today rule 3531:71 */
+  --raw-signals-color-accent-a75: rgba(247, 135, 81, 0.75);
+  /* Next run fill / stroke 3488:22416 */
+  --raw-signals-color-accent-a06: rgba(247, 135, 81, 0.06);
+  --raw-signals-color-accent-a40: rgba(247, 135, 81, 0.4);
+  /* Its drop shadow (0 8 22 -4 #000/50) as Figma shows it through the 6% fill:
+     measured shade ramp inside the chip, top → 65% → bottom */
+  --raw-signals-color-black-a08: rgba(0, 0, 0, 0.08);
+  --raw-signals-color-black-a25: rgba(0, 0, 0, 0.25);
+  /* Label plate 3488:22711 */
+  --raw-signals-color-plate: rgba(11, 11, 11, 0.9);
+  /* Ring track 3488:22428, failed-hard curve / crossing marker 3488:22446, map dot 3488:22459 */
+  --raw-signals-color-ring-track: #383b3e;
+  --raw-signals-color-accent-a90: rgba(247, 135, 81, 0.9);
+  --raw-signals-color-curve-failed: #606468;
+  --raw-signals-color-marker: #0f1112;
+  --raw-signals-color-map-dot: rgba(166, 166, 166, 0.38);
+  /* Motion only (brief: settle glow on today's peak, region pings) — invisible at rest */
+  --raw-signals-shadow-glow: 0 0 0.875rem 0.125rem rgba(247, 135, 81, 0.55);
+  --raw-signals-radius-widget: 1.5rem; /* 24 (3888:6607, all four frames) */
+  --raw-signals-radius-load: 0.25rem; /* 4 */
+  --raw-signals-radius-rule: 0.0625rem; /* 1 */
+  --raw-signals-radius-chip: 0.5rem; /* 8 */
+  --raw-signals-radius-plate: 0.375rem; /* 6 */
+  /* 32/40 — 82% 3488:22430, 3 3488:22440 */
+  --raw-signals-font-size-stat: 2rem;
+  --raw-signals-line-height-stat: 2.5rem;
+  /* 28/36 — 82% in the 1024 frame 3603:3843 (the "3" keeps 32/40 there) */
+  --raw-signals-font-size-stat-1024: 1.75rem;
+  --raw-signals-line-height-stat-1024: 2.25rem;
+  /* 22/28 — 82% in the 390 frame 3893:4118 */
+  --raw-signals-font-size-stat-390: 1.375rem;
+  --raw-signals-line-height-stat-390: 1.75rem;
+  /* 12/20 — next-run chip copy at 390 3928:72 */
+  --raw-signals-font-size-chip-390: 0.75rem;
+  /* 15/21 — region labels at 390 3893:4092 */
+  --raw-signals-font-size-pin-390: 0.9375rem;
+  --raw-signals-line-height-pin-390: 1.3125rem;
+}
+
+/* Tier 2 — semantic */
+:root {
+  --signals-widget: var(--card-glass); /* glass (not in Figma): was the raw fill */
+  --signals-widget-border: var(--raw-signals-color-widget-border);
+  --signals-load-today-from: var(--raw-color-lime-400);
+  --signals-load-today-to: var(--raw-signals-color-accent-a72);
+  --signals-today-rule: var(--raw-signals-color-accent-a75);
+  --signals-chip: var(--raw-signals-color-accent-a06);
+  --signals-chip-border: var(--raw-signals-color-accent-a40);
+  --signals-chip-fill:
+    linear-gradient(var(--signals-chip), var(--signals-chip)),
+    linear-gradient(
+      in srgb to bottom,
+      var(--raw-signals-color-black-a08),
+      var(--raw-signals-color-black-a25) 65%
+    );
+  --signals-plate: var(--raw-signals-color-plate);
+  --signals-ring-track: var(--raw-signals-color-ring-track);
+  --signals-curve-recovered: var(--raw-signals-color-accent-a90);
+  --signals-curve-failed: var(--raw-signals-color-curve-failed);
+  --signals-marker: var(--raw-signals-color-marker);
+  --signals-map-dot: var(--raw-signals-color-map-dot);
+  --signals-glow: var(--raw-signals-shadow-glow);
+  --signals-corner-widget: var(--raw-signals-radius-widget);
+  --signals-corner-load: var(--raw-signals-radius-load);
+  --signals-corner-rule: var(--raw-signals-radius-rule);
+  --signals-corner-chip: var(--raw-signals-radius-chip);
+  --signals-corner-plate: var(--raw-signals-radius-plate);
+  --signals-type-stat: var(--raw-signals-font-size-stat);
+  --signals-line-stat: var(--raw-signals-line-height-stat);
+  --signals-type-stat-1024: var(--raw-signals-font-size-stat-1024);
+  --signals-line-stat-1024: var(--raw-signals-line-height-stat-1024);
+  --signals-type-stat-390: var(--raw-signals-font-size-stat-390);
+  --signals-line-stat-390: var(--raw-signals-line-height-stat-390);
+  --signals-type-chip-390: var(--raw-signals-font-size-chip-390);
+  --signals-type-pin-390: var(--raw-signals-font-size-pin-390);
+  --signals-line-pin-390: var(--raw-signals-line-height-pin-390);
+  --signals-letter-spacing-stat: var(--raw-letter-spacing-minus-1);
+}
+
+@theme inline {
+  --color-signals-widget: var(--signals-widget);
+  --color-signals-widget-border: var(--signals-widget-border);
+  --color-signals-load-today-from: var(--signals-load-today-from);
+  --color-signals-load-today-to: var(--signals-load-today-to);
+  --color-signals-today-rule: var(--signals-today-rule);
+  --color-signals-chip: var(--signals-chip);
+  --color-signals-chip-border: var(--signals-chip-border);
+  --color-signals-plate: var(--signals-plate);
+  --color-signals-ring-track: var(--signals-ring-track);
+  --color-signals-curve-recovered: var(--signals-curve-recovered);
+  --color-signals-curve-failed: var(--signals-curve-failed);
+  --color-signals-marker: var(--signals-marker);
+  --color-signals-map-dot: var(--signals-map-dot);
+  --shadow-signals-glow: var(--signals-glow);
+  --radius-signals-widget: var(--signals-corner-widget);
+  --radius-signals-load: var(--signals-corner-load);
+  --radius-signals-rule: var(--signals-corner-rule);
+  --radius-signals-chip: var(--signals-corner-chip);
+  --radius-signals-plate: var(--signals-corner-plate);
+  --text-signals-stat: var(--signals-type-stat);
+  --leading-signals-stat: var(--signals-line-stat);
+  --text-signals-stat-1024: var(--signals-type-stat-1024);
+  --leading-signals-stat-1024: var(--signals-line-stat-1024);
+  --text-signals-stat-390: var(--signals-type-stat-390);
+  --leading-signals-stat-390: var(--signals-line-stat-390);
+  --text-signals-chip-390: var(--signals-type-chip-390);
+  --text-signals-pin-390: var(--signals-type-pin-390);
+  --leading-signals-pin-390: var(--signals-line-pin-390);
+  --tracking-signals-stat: var(--signals-letter-spacing-stat);
+}

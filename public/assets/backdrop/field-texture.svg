@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="2400" viewBox="0 0 1440 2400" fill="none">
+  <!-- Field texture 3488:18916 — 30×50 dots on a 48 grid from (22,22), plus four marks. -->
+  <defs>
+    <pattern id="dot" x="22" y="22" width="48" height="48" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="2" fill="#D5D5D5" fill-opacity="0.05"/>
+    </pattern>
+  </defs>
+  <rect x="22" y="22" width="1396" height="2356" fill="url(#dot)"/>
+  <g stroke="#C2C2C2" stroke-opacity="0.2">
+    <path d="M88 400H104M96 392V408"/>
+    <path d="M1336 400H1352M1344 392V408"/>
+    <path d="M88 1800H104M96 1792V1808"/>
+    <path d="M1336 1800H1352M1344 1792V1808"/>
+  </g>
+</svg>

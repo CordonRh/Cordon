@@ -1,0 +1,25 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="384" height="56" viewBox="0 0 384 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Volume" clip-path="url(#clip0_0_5)">
+<path id="Vector" d="M0 52L27 46L54 48L81 40L108 42L135 34L162 28L189 30L216 22L243 24L270 16L297 18L324 10L351 12L378 4V56H0V52Z" fill="url(#paint0_linear_0_5)"/>
+<path id="Vector_2" d="M0 52L27 46L54 48L81 40L108 42L135 34L162 28L189 30L216 22L243 24L270 16L297 18L324 10L351 12L378 4" stroke="url(#paint1_linear_0_5)" stroke-width="2" stroke-linejoin="round"/>
+<circle id="Now" cx="378" cy="4" r="3" fill="#ff8158"/>
+<rect id="Now line" x="378" y="4" width="1" height="52" fill="url(#paint2_linear_0_5)"/>
+</g>
+<defs>
+<linearGradient id="paint0_linear_0_5" x1="0" y1="-2.88853e-07" x2="0" y2="56" gradientUnits="userSpaceOnUse">
+<stop stop-color="#ff8158" stop-opacity="0.22"/>
+<stop offset="1" stop-color="#ff8158" stop-opacity="0"/>
+</linearGradient>
+<linearGradient id="paint1_linear_0_5" x1="0" y1="4" x2="22.961" y2="94.2887" gradientUnits="userSpaceOnUse">
+<stop offset="0.4171" stop-color="#ffbe9f"/>
+<stop offset="1" stop-color="#ff8158"/>
+</linearGradient>
+<linearGradient id="paint2_linear_0_5" x1="378.5" y1="4" x2="378.5" y2="56" gradientUnits="userSpaceOnUse">
+<stop stop-color="#ff8158" stop-opacity="0.9"/>
+<stop offset="1" stop-color="#ff8158" stop-opacity="0.1"/>
+</linearGradient>
+<clipPath id="clip0_0_5">
+<rect width="384" height="56" fill="white"/>
+</clipPath>
+</defs>
+</svg>

@@ -1,0 +1,13 @@
+{
+  "name": "@cordon/sdk",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "dependencies": {
+    "@aztec/bb.js": "5.0.0-nightly.20260522",
+    "@cordon/shared": "workspace:*",
+    "@noir-lang/noir_js": "1.0.0-beta.22"
+  }
+}
