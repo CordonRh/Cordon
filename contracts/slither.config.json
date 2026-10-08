@@ -1,5 +1,5 @@
 {
-  "filter_paths": "lib/|test/|script/|verifiers/|testnet/",
+  "filter_paths": "lib/|test/|script/|verifiers/",
   "exclude_dependencies": true,
   "exclude_informational": true,
   "exclude_low": true,

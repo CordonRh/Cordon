@@ -20,10 +20,10 @@ contracts verify on-chain.
 | Checks | `SolvencyVerifier`, `ScreeningGate` | Hourly balance ≥ owed + fees; deposit screening in standby |
 | Staking | `CrdnStaking` (not deployed) | Splits pool fees 80% workers (proving, relaying, registration) / 10% treasury / 5% stakers / 5% CRDN buyback-and-burn; each stake sweeps and distributes pool fees first |
 | SDK | `packages/sdk` | Note model, tree, browser prover, builders, sealed boxes, DvP matcher |
-| App | `src/` (TanStack Start on Vercel) | Dashboard; tRPC API in `src/server/trpc`; hosted testnet sequencer `src/server/sequencer.ts` |
-| Workers | `supabase/functions` | indexer, relayer (user relays + keeper queue), clearer, action-watcher, solvency, encumbrance-keeper, vault-registrar (testnet), monitor |
+| App | `src/` (TanStack Start on Vercel) | Dashboard; tRPC API in `src/server/trpc`; hosted DvP sequencer `src/server/sequencer.ts` |
+| Workers | `supabase/functions` | indexer, relayer (user relays + keeper queue), clearer, action-watcher, solvency, encumbrance-keeper, monitor |
 | Database | `supabase/migrations` | Indexed public data, encrypted workspace backups, sealed inbox and orders; RLS everywhere |
-| Enclave sequencer | `services/tee-sequencer` | Mainnet DvP sequencer in an AWS Nitro Enclave (not deployed) |
+| Enclave sequencer | `services/tee-sequencer` | The same matching for an attested enclave; not deployed (DvP runs on the hosted sequencer) |
 
 ## Actors and roles
 
@@ -51,9 +51,9 @@ The full list of privileged functions and key custody is in [SECURITY.md](../SEC
   on the exit path reads prices.
 - **Keeper:** live and honest for splits (`StepHeld` alerts) and defaults (PLEDGE / LIEN
   holders depend on it to declare a default).
-- **Sequencer:** live; on testnet it can read orders (no enclave). It cannot steal or
-  redirect funds.
-- **Governance:** a 2-of-3 Safe behind a 24h timelock (testnet: one admin key).
+- **Sequencer:** live; the hosted sequencer can read the orders sealed to it (amounts,
+  note openings; never spending keys). It cannot steal or redirect funds.
+- **Governance:** a 2-of-3 Safe behind a 24h timelock.
 - **Supabase / Vercel:** store only ciphertext and public chain data; they can censor or
   delay relays and orders, not move funds.
 

@@ -4,7 +4,7 @@
 --    Direct anon/authenticated access is revoked so the limits cannot be bypassed.
 -- 2. Keeper jobs use their own queue and key, so user relays cannot starve or drain them.
 -- 3. Vault requests are written by the server for the signed-in wallet only.
--- 4. Testnet auto-approval of defaults is an explicit setting, off unless turned on.
+-- 4. Auto-approval of default requests is an explicit setting, off unless turned on.
 -- 5. dvp_take reads at most 50 orders per batch; closed or expired orders are pruned.
 
 -- ─── 1. Rate limits and server-only writes ──────────────────────────────────
@@ -90,16 +90,16 @@ grant execute on function public.keeper_read(integer), public.keeper_done(bigint
 -- ─── 3. Vault requests: server-written for the signed-in wallet ─────────────
 revoke execute on function public.request_vault(public.bytes32, public.address, public.bytes32) from anon, authenticated;
 
--- ─── 4. Testnet default auto-approval behind an explicit setting ───────────
+-- ─── 4. Default auto-approval behind an explicit setting ───────────────────
 create table public.app_settings (
   key   text primary key,
   value text not null
 );
 alter table public.app_settings enable row level security;
 revoke all on public.app_settings from anon, authenticated;
--- Off by default; the testnet project turns it on with
---   update public.app_settings set value = 'on' where key = 'testnet_auto_default';
-insert into public.app_settings (key, value) values ('testnet_auto_default', 'off');
+-- Off: the keeper reviews each request. It turns on with
+--   update public.app_settings set value = 'on' where key = 'auto_default';
+insert into public.app_settings (key, value) values ('auto_default', 'off');
 
 create or replace function public.request_default(enc public.bytes32)
 returns void
@@ -108,7 +108,7 @@ security definer
 set search_path = ''
 as $$
   insert into public.default_requests (enc_commit, approved)
-  values (enc, coalesce((select value = 'on' from public.app_settings where key = 'testnet_auto_default'), false))
+  values (enc, coalesce((select value = 'on' from public.app_settings where key = 'auto_default'), false))
   on conflict do nothing;
 $$;
 

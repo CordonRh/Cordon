@@ -9,7 +9,7 @@ Deno.test("hex32 pads a uint256 and lower lower-cases", () => {
 Deno.test("deployment reads CORDON_DEPLOYMENT and fails closed without it", async () => {
   clearSecrets();
   await throws(() => deployment(), /missing secret CORDON_DEPLOYMENT/);
-  Deno.env.set("CORDON_DEPLOYMENT", JSON.stringify({ chainId: 46630, pool: "0x01" }));
+  Deno.env.set("CORDON_DEPLOYMENT", JSON.stringify({ chainId: 4663, pool: "0x01" }));
   eq(deployment().pool, "0x01");
   clearSecrets();
 });

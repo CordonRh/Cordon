@@ -2,7 +2,7 @@
 pragma solidity 0.8.30;
 
 // Unauthorized-caller / invalid-input coverage for every external state-changing function
-// in contracts/src/*.sol (src/testnet and src/verifiers excluded). "N:" = this file,
+// in contracts/src/*.sol (src/verifiers excluded). "N:" = this file,
 // otherwise the existing test that already asserts the revert. 54 / 54 covered.
 //
 // | #  | Contract.function                | Negative case(s)                                    | Test(s)                                                       |

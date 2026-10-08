@@ -25,10 +25,6 @@ const D = {
   navAttestor: "0x0000000000000000000000000000000000000006",
   priceOracle: "0x0000000000000000000000000000000000000007",
   dvpSettler: "0x0000000000000000000000000000000000000008",
-  testAssets: {
-    USDG: "0x00000000000000000000000000000000000000c1",
-    NVDA: "0x00000000000000000000000000000000000000c2",
-  },
 } as const;
 const STOCK = "0x00000000000000000000000000000000000000aa" as Address;
 const USD = "0x00000000000000000000000000000000000000bb" as Address;
@@ -71,12 +67,12 @@ const trpc = new Proxy(
 
 mock.module("./env", () => ({
   env: { deployment: JSON.stringify(D), supabaseUrl: "https://db.test" },
-  chainId: 46630,
+  chainId: 4663,
   backendEnabled: true,
 }));
 mock.module("./trpc", () => ({ trpc }));
 mock.module("./wallet", () => ({
-  robinhood: { id: 46630 },
+  robinhood: { id: 4663 },
   wagmiConfig: {},
   signWithWallet: async () => `0x${"5a".repeat(65)}`,
 }));
@@ -228,7 +224,6 @@ describe("keys", () => {
   test("the deployment is read from the environment", () => {
     expect(c.deployment?.pool).toBe(D.pool);
     expect(c.protocolEnabled).toBe(true);
-    expect(c.testAssets.USDG).toBe(D.testAssets.USDG);
   });
 });
 
@@ -814,7 +809,7 @@ describe("nav", () => {
   });
 });
 
-// ---------------------------------------------------------------- disclosure and faucet
+// ---------------------------------------------------------------- disclosure
 
 describe("disclosure", () => {
   test("grant seals notes with nullifiers to the viewer; open checks them against the chain", async () => {
@@ -855,12 +850,5 @@ describe("disclosure", () => {
 
     w.api["disclose.revoke"] = () => ({ revoked: true });
     expect(await c.revokeDisclosure("g1")).toEqual({ revoked: true });
-  });
-
-  test("faucet mints test tokens", async () => {
-    await expect(c.faucet("DOGE", zeroAddress)).rejects.toThrow("No test DOGE");
-    expect(await c.faucet("USDG", zeroAddress)).toBe(1000n * 10n ** 6n);
-    expect(await c.faucet("NVDA", zeroAddress)).toBe(100n * 10n ** 18n);
-    expect(w.writes.map((x) => x.args[1])).toEqual([1000n * 10n ** 6n, 100n * 10n ** 18n]);
   });
 });

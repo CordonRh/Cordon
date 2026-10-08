@@ -99,7 +99,7 @@ export async function run(
     }
   }
 
-  // ---- operational keys: WATCH_ADDRESSES = "keeper:0x..,relayer:0x..,admin:0x.." (+ the sequencer)
+  // ---- operational keys: WATCH_ADDRESSES = "keeper:0x..,relayer:0x.." (+ the sequencer)
   const watch = parseWatch(Deno.env.get("WATCH_ADDRESSES") ?? "");
   watch.push(["sequencer", await client.readContract({ address: d.control, abi: cordonControlAbi, functionName: "sequencer" })]);
   for (const [name, addr] of watch) {

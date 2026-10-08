@@ -10,7 +10,7 @@
 <p align="center">
   <a href="https://github.com/CordonRh/Cordon/actions/workflows/ci.yml"><img src="https://github.com/CordonRh/Cordon/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License: MIT"></a>
-  <img src="https://img.shields.io/badge/network-Robinhood%20Chain%20Testnet-orange.svg" alt="Network: Robinhood Chain Testnet">
+  <img src="https://img.shields.io/badge/network-Robinhood%20Chain-green.svg" alt="Network: Robinhood Chain">
   <img src="https://img.shields.io/badge/proofs-Noir%20%2B%20UltraHonk-black.svg" alt="Proofs: Noir + UltraHonk">
 </p>
 
@@ -28,9 +28,10 @@ Every note spend carries a zero-knowledge proof (Noir circuits, UltraHonk) that 
 verified on-chain. The pool itself is immutable and has no owner, and withdrawals can never
 be paused.
 
-> **Status:** live on **Robinhood Chain Testnet (46630)** with faucet tokens only, at
-> [usecordon.tech](https://usecordon.tech). Not yet audited by a third party; see
-> [Security](#security).
+> **Status:** live on **Robinhood Chain mainnet (4663)** at
+> [usecordon.tech](https://usecordon.tech). The contracts are owned by a 2-of-3 Safe through
+> a 24-hour timelock. NAV vaults are off and $CRDN is not launched. Not audited by a third
+> party; see [Security](#security).
 
 ## Features
 
@@ -41,7 +42,7 @@ be paused.
 | **Private transfers** | Send, split and partially withdraw with a 2-in / 2-out transfer proof. A withdrawal binds its recipient inside the proof, so a relayer cannot redirect it. |
 | **Encumbrances** | Pledge or lien a note to a holder. The holder releases it with a secret only it can derive, or enforces it after a declared default. |
 | **Atomic DvP** | Each trader proves its own order in the browser and seals it to the sequencer. Trades settle atomically against both order proofs; no order term can be changed. |
-| **Provable NAV** | A vault manager proves the value of its notes at the latest oracle prices. The attestation publishes NAV per share, total shares, liabilities and the prices used, not the holdings; an attesting vault's later spends are linkable (see [SECURITY.md](SECURITY.md)). |
+| **Provable NAV** | A vault manager proves the value of its notes at the latest oracle prices. The attestation publishes NAV per share, total shares, liabilities and the prices used, not the holdings; an attesting vault's later spends are linkable (see [SECURITY.md](SECURITY.md)). Off on mainnet until a nullifier non-membership accumulator ships. |
 | **Encrypted workspace** | Optional sync encrypts the dashboard workspace in the browser with a key derived from a wallet signature; the server stores ciphertext only. |
 | **Gasless relaying** | A relayer pays gas for users' proof-carrying calls. If it refuses, the app submits the same call from the user's wallet, so exits never depend on it. |
 
@@ -86,10 +87,10 @@ flowchart LR
 | Checks | `SolvencyVerifier`, `ScreeningGate` | Hourly solvency (balance ≥ owed + fees); deposit screening during standby |
 | SDK | `packages/sdk` | Note model, tree, browser prover, proof input builders, sealed boxes, DvP matcher |
 | Shared | `packages/shared` | Chain config, ABIs, schemas, deployment manifests |
-| App and API | `src/` | Dashboard and tRPC API on Vercel; hosted testnet DvP sequencer |
-| Workers | `supabase/functions` | indexer, relayer, clearer, action-watcher, solvency, encumbrance-keeper, vault-registrar, monitor |
+| App and API | `src/` | Dashboard and tRPC API on Vercel; hosted DvP sequencer |
+| Workers | `supabase/functions` | indexer, relayer, clearer, action-watcher, solvency, encumbrance-keeper, monitor |
 | Database | `supabase/migrations` | Indexed public data, encrypted workspace backups, sealed inbox and orders; row-level security throughout |
-| Services | `services/` | Enclave DvP sequencer (AWS Nitro), prover-assist, NAV prover; not hosted yet |
+| Services | `services/` | Enclave DvP sequencer, prover-assist, NAV prover; not deployed |
 
 Detailed design: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) ·
 Threat model: [docs/THREAT_MODEL.md](docs/THREAT_MODEL.md) ·
@@ -107,7 +108,6 @@ Invariants and their tests: [docs/INVARIANTS.md](docs/INVARIANTS.md)
 ├── services/            Enclave sequencer, prover-assist, NAV prover
 ├── src/                 Web app (TanStack Start) and tRPC API (src/server)
 ├── supabase/            Migrations, database tests, edge-function workers
-├── scripts/             Live testnet end-to-end tests and governance helpers
 └── public/              Static assets and compiled browser circuits
 ```
 
@@ -169,32 +169,31 @@ CI (`.github/workflows/ci.yml`) runs on every push:
 ## Deployment
 
 - **Contracts:** `contracts/script/Deploy.s.sol` deploys and wires everything through a
-  bootstrap timelock, hands control to governance with a 24-hour delay (a 2-of-3 Safe on
-  mainnet; a single admin key on testnet), and drops every deployer role. `contracts/script/PostDeployCheck.s.sol` then verifies the live
+  bootstrap timelock, hands control to governance (a 2-of-3 Safe) with a 24-hour delay,
+  and drops every deployer role. `contracts/script/PostDeployCheck.s.sol` then verifies the live
   deployment against `packages/shared/deployments/<chainId>.json` and fails on any mismatch.
 - **Database and workers:** `npx supabase db push` and `npx supabase functions deploy`.
   Fill in the project URL and anon key placeholders in
-  `supabase/migrations/20261001000000_testnet_wiring.sql` first.
+  `supabase/migrations/20261001000000_wiring.sql` first.
 - **App:** deployed on Vercel; the deployment manifest is passed through the
   `VITE_CORDON_DEPLOYMENT` / `CORDON_DEPLOYMENT` environment variables.
 
 | Network | Chain ID | Addresses |
 |---|---|---|
-| Robinhood Chain Testnet | 46630 | [`packages/shared/deployments/46630.json`](packages/shared/deployments/46630.json) · [explorer](https://explorer.testnet.chain.robinhood.com) |
-| Robinhood Chain | 4663 | Not deployed |
+| Robinhood Chain | 4663 | [`packages/shared/deployments/4663.json`](packages/shared/deployments/4663.json) |
 
-Release `v0.1.0` is the build of record for the testnet deployment: its `contracts/src`
+Release `v0.1.0` is the build of record for the mainnet deployment: its `contracts/src`
 matches the deployed bytecode (except `CrdnStaking`, which is not deployed), and
 `PostDeployCheck.s.sol` verifies the live configuration.
 
 ## Security
 
-- **Not audited by a third party.** The testnet deployment holds faucet tokens only. Do not
-  deposit real assets until an external audit of `contracts/` and `circuits/` is complete.
+- **Not audited by a third party.** The AI-assisted security reviews are listed in
+  [SECURITY.md](SECURITY.md).
 - Exits are never pausable and the pool has no owner. Configuration changes (engines,
   roles, listings, feeds, vaults) go through a 24-hour timelock; operational roles (guardian
-  pause, keeper, sequencer) act directly within the limits listed in SECURITY.md. On testnet
-  the timelock is held by a single admin key; mainnet uses a 2-of-3 Safe.
+  pause, keeper, sequencer) act directly within the limits listed in SECURITY.md. The timelock
+  is held by a 2-of-3 Safe.
 - Privileged roles, key custody, monitoring, incident response and accepted risks are
   documented in [SECURITY.md](SECURITY.md).
 

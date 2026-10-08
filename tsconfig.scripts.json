@@ -1,8 +1,0 @@
-{
-  "extends": "./tsconfig.json",
-  "include": ["scripts/**/*.ts"],
-  "exclude": [],
-  "compilerOptions": {
-    "types": ["vite/client", "bun"]
-  }
-}

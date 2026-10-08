@@ -1,4 +1,4 @@
--- Note delivery between wallets, the DvP order queue for the hosted testnet sequencer,
+-- Note delivery between wallets, the DvP order queue for the hosted sequencer,
 -- holder default requests and vault registration requests.
 
 -- ─── Encrypted note inbox ──────────────────────────────────────────────────
@@ -54,8 +54,8 @@ revoke all on function public.dvp_enqueue(text) from public;
 grant execute on function public.dvp_enqueue(text) to anon, authenticated, service_role;
 
 -- ─── Holder default requests ───────────────────────────────────────────────
--- Note: testnet approves a holder's request at once; mainnet keeps ops approval
--- (approved = false here) before the keeper declares the default.
+-- Approved at once here; 20261005154403_hardening.sql puts this behind the auto_default
+-- setting (off), so the keeper reviews each request before declaring a default.
 create function public.request_default(enc public.bytes32)
 returns void
 language sql

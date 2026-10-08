@@ -88,7 +88,7 @@ export const body = async (r: Response | Promise<Response>) => {
 export function clearSecrets() {
   for (const k of [
     "CORDON_DEPLOYMENT", "RPC_URL_4663", "SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY",
-    "RELAYER_PRIVATE_KEY", "KEEPER_PRIVATE_KEY", "ADMIN_PRIVATE_KEY",
+    "RELAYER_PRIVATE_KEY", "KEEPER_PRIVATE_KEY",
   ]) Deno.env.delete(k);
 }
 

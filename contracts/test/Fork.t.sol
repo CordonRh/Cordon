@@ -11,6 +11,7 @@ import {ActionEngine} from "../src/ActionEngine.sol";
 import {AssetGate} from "../src/AssetGate.sol";
 import {CordonControl} from "../src/CordonControl.sol";
 import {CordonPool} from "../src/CordonPool.sol";
+import {PerShareFeed} from "../src/PerShareFeed.sol";
 import {PriceOracle} from "../src/PriceOracle.sol";
 import {ScreeningGate} from "../src/ScreeningGate.sol";
 import {SolvencyVerifier} from "../src/SolvencyVerifier.sol";
@@ -46,7 +47,7 @@ interface IFeedProxy {
 ///   forge test --match-path test/Fork.t.sol --fork-url https://rpc.mainnet.chain.robinhood.com/rpc
 /// FORK_BLOCK pins the block, which needs an archive RPC: the public endpoint only serves
 /// recent state, so without FORK_BLOCK the suite runs at the latest block and asserts
-/// relations (price = answer x multiplier, staleness windows) rather than fixed values.
+/// relations (price per token = answer, staleness windows) rather than fixed values.
 contract ForkTest is Test {
     uint256 internal constant ROBINHOOD = 4663;
     address internal constant TSLA = 0x322F0929c4625eD5bAd873c95208D54E1c003b2d;
@@ -97,7 +98,9 @@ contract ForkTest is Test {
         vm.startPrank(gov);
         control.setKeeper(keeper, true);
         gate.register(TSLA, AssetGate.Class.STOCK8056, gate.ALL_CLAIMS(), gate.ALL_TEMPLATES());
-        oracle.setFeed(TSLA, feed, 1 days); // Chainlink lists this feed with a 86400 s heartbeat
+        // Chainlink lists this feed with a 86400 s heartbeat; its answer already includes the
+        // multiplier, so the oracle reads it through PerShareFeed.
+        oracle.setFeed(TSLA, new PerShareFeed(feed, IERC8056(TSLA)), 1 days);
         vm.stopPrank();
 
         deal(TSLA, alice, 100e18);
@@ -134,14 +137,14 @@ contract ForkTest is Test {
         (id, answer,, updatedAt,) = feed.latestRoundData();
     }
 
-    /// Price per raw unit (1e27 = 1 USD) from the real 8-decimal answer, the real 18-decimal
-    /// token and its real multiplier. The fork may land on a market close (24/5 feed), so the
-    /// clock is set inside the round's heartbeat first.
+    /// Price per raw unit (1e27 = 1 USD) from the real 8-decimal answer and the real 18-decimal
+    /// token: the answer is already per token (multiplier included), so the price is the answer
+    /// itself, up to the adapter's rounding. The fork may land on a market close (24/5 feed), so
+    /// the clock is set inside the round's heartbeat first.
     function test_fork_oraclePricesRealRound() public {
         (uint80 id, int256 answer, uint256 updatedAt) = _latest();
         vm.warp(updatedAt + 1 minutes);
-        uint256 expected = uint256(answer) * 1e27 / 1e8 * IERC8056(TSLA).uiMultiplier() / 1e18 / 1e18;
-        assertEq(oracle.rawPrice(TSLA, id), expected);
+        assertApproxEqAbs(oracle.rawPrice(TSLA, id), uint256(answer) * 10, 100);
         assertTrue(oracle.ok(TSLA, id));
     }
 
@@ -302,7 +305,7 @@ contract ForkTest is Test {
         assertEq(IERC8056(TSLA).newUIMultiplier(), m1);
         assertEq(IERC8056(TSLA).effectiveAt(), at);
         assertEq(actions.multiplier(TSLA), m0, "not yet effective");
-        assertEq(oracle.rawPrice(TSLA, id), uint256(answer) * 1e19 * m0 / 1e18 / 1e18);
+        assertApproxEqAbs(oracle.rawPrice(TSLA, id), uint256(answer) * 10, 100);
 
         vm.warp(at);
         assertEq(IERC8056(TSLA).uiMultiplier(), m1, "token switches at effectiveAt");

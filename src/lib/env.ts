@@ -11,7 +11,7 @@ export const env = {
   deployment: import.meta.env.VITE_CORDON_DEPLOYMENT as string | undefined,
 };
 
-/** The deployment's network (testnet 46630 or mainnet 4663); mainnet when none is set. */
+/** The deployment's network (Robinhood Chain 4663 when none is set). */
 export const chainId: number = (() => {
   try {
     return env.deployment ? Number(JSON.parse(env.deployment).chainId) || 4663 : 4663;

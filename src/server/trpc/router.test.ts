@@ -340,7 +340,7 @@ describe("procedures", () => {
         RPC_URL_4663: "https://rpc.test",
         CORDON_DEPLOYMENT: JSON.stringify({
           priceOracle: "0x0000000000000000000000000000000000000002",
-          chainId: 46630,
+          chainId: 4663,
         }),
       });
       fakes.publicClient = {

@@ -21,7 +21,7 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "test": "bun test src packages services",
-    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.scripts.json"
+    "typecheck": "tsc --noEmit"
   },
   "overrides": {
     "rolldown": "1.2.1"

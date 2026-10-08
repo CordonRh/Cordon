@@ -213,7 +213,7 @@ export const appRouter = router({
   }),
 
   encumbrances: router({
-    /** A holder asks for a default to be declared (testnet approves at once; see request_default). */
+    /** A holder asks for a default to be declared (approved at once only when the auto_default setting is on; see request_default). */
     requestDefault: publicProcedure.input(bytes32).mutation(async ({ ctx, input }) => {
       await rateLimit(ctx, "default", 10);
       const { error } = await adminDb().rpc("request_default", { enc: input.toLowerCase() });
@@ -300,7 +300,7 @@ export const appRouter = router({
           [...new Set(input.assets.map((a) => a.toLowerCase() as `0x${string}`))].map(quoteAsset),
         ),
       })),
-    /** The key orders are sealed to: the enclave's (SEQUENCER_URL), else the hosted testnet sequencer's. */
+    /** The key orders are sealed to: the enclave's (SEQUENCER_URL), else the hosted sequencer's. */
     key: publicProcedure.query(async () => {
       const url = chain().sequencerUrl;
       if (url) return (await (await fetch(`${url}/key`)).json()) as { publicKey: string; attestation: string | null };

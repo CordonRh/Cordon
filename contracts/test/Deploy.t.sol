@@ -6,7 +6,6 @@ import {TimelockController} from "@openzeppelin/contracts/governance/TimelockCon
 import {CordonControl} from "../src/CordonControl.sol";
 import {AssetGate} from "../src/AssetGate.sol";
 import {CordonPool} from "../src/CordonPool.sol";
-import {PriceOracle} from "../src/PriceOracle.sol";
 import {Deploy} from "../script/Deploy.s.sol";
 
 /// Spec §3.9: after deployment the timelock holds a 24h delay, only the Safe can
@@ -31,7 +30,6 @@ contract DeployTest is Test {
         vm.setEnv("CRDN", vm.toString(makeAddr("crdn")));
         vm.setEnv("KEEPER", vm.toString(keeper));
         vm.setEnv("SEQUENCER", vm.toString(sequencer));
-        vm.setEnv("TESTNET_ASSETS", "true");
 
         vm.warp(1_800_000_000); // at timestamp 1 a 0-delay operation reads as already done
         Deploy.Deployed memory d = new Deploy().run();
@@ -54,12 +52,6 @@ contract DeployTest is Test {
         assertTrue(control.isKeeper(keeper));
         assertEq(control.sequencer(), sequencer);
         assertEq(control.feeRecipient(), d.staking);
-
-        // Testnet faucet assets are registered and priced in the bootstrap batch.
-        assertTrue(AssetGate(d.assetGate).isActive(d.testAssets[0]));
-        assertEq(AssetGate(d.assetGate).claimMask(d.testAssets[3]), 27, "USDG has no VOTE");
-        assertEq(PriceOracle(d.oracle).rawPrice(d.testAssets[0], 1), 250e27 / 1e18, "$250 per share");
-        vm.setEnv("TESTNET_ASSETS", "false");
     }
 
     /// $CRDN not launched: no staking, fees stay in the pool.

@@ -19,9 +19,6 @@ import {PriceOracle} from "../src/PriceOracle.sol";
 import {ScreeningGate} from "../src/ScreeningGate.sol";
 import {SolvencyVerifier} from "../src/SolvencyVerifier.sol";
 import {IProofVerifier} from "../src/interfaces/IProofVerifier.sol";
-import {AggregatorV3Interface} from "../src/interfaces/AggregatorV3Interface.sol";
-import {TestnetPriceFeed} from "../src/testnet/TestnetPriceFeed.sol";
-import {TestnetStockToken} from "../src/testnet/TestnetStockToken.sol";
 import {TransferHonkVerifier} from "../src/verifiers/TransferHonkVerifier.sol";
 import {BundleHonkVerifier} from "../src/verifiers/BundleHonkVerifier.sol";
 import {UnbundleHonkVerifier} from "../src/verifiers/UnbundleHonkVerifier.sol";
@@ -59,9 +56,6 @@ contract Deploy is Script {
         address nav;
         address solvency;
         address staking;
-        // TESTNET_ASSETS=true: faucet tokens (TSLA, NVDA, AMZN, USDG) and their feeds.
-        address[4] testAssets;
-        address[4] testFeeds;
     }
 
     function run() external returns (Deployed memory d) {
@@ -75,7 +69,6 @@ contract Deploy is Script {
         boot[1] = safe;
         d.timelock = address(new TimelockController(0, boot, boot, deployer));
         _deploy(d);
-        if (vm.envOr("TESTNET_ASSETS", false)) _deployTestAssets(d, safe);
         _wireAndLock(d, deployer);
         vm.stopBroadcast();
         _write(d);
@@ -115,21 +108,10 @@ contract Deploy is Script {
         }
     }
 
-    /// TESTNET ONLY: faucet Stock Tokens + USDG with always-fresh mock feeds, admin = Safe.
-    function _deployTestAssets(Deployed memory d, address admin) internal {
-        string[4] memory names = ["Tesla Stock Token (test)", "NVIDIA Stock Token (test)", "Amazon Stock Token (test)", "USDG (test)"];
-        string[4] memory symbols = ["TSLA", "NVDA", "AMZN", "USDG"];
-        int256[4] memory prices = [int256(250e8), 120e8, 180e8, 1e8];
-        for (uint256 i; i < 4; ++i) {
-            d.testAssets[i] = address(new TestnetStockToken(names[i], symbols[i], i == 3 ? 6 : 18, admin));
-            d.testFeeds[i] = address(new TestnetPriceFeed(prices[i], admin));
-        }
-    }
-
     /// Wiring through the timelock, then lock it: 24h delay and Safe-only roles.
     function _wireAndLock(Deployed memory d, address deployer) internal {
         TimelockController timelock = TimelockController(payable(d.timelock));
-        uint256 n = d.testAssets[0] == address(0) ? 7 : 15;
+        uint256 n = 7;
         address[] memory targets = new address[](n);
         bytes[] memory calls = new bytes[](n);
         (targets[0], calls[0]) = (d.control, abi.encodeCall(CordonControl.setEngine, (d.bundler, true)));
@@ -140,21 +122,6 @@ contract Deploy is Script {
         (targets[4], calls[4]) =
             (d.control, abi.encodeCall(CordonControl.setSequencer, (vm.envAddress("SEQUENCER"))));
         (targets[5], calls[5]) = (d.control, abi.encodeCall(CordonControl.setFeeRecipient, (d.staking)));
-        for (uint256 i; i < n - 7; i += 2) {
-            address a = d.testAssets[i / 2];
-            bool usd = i / 2 == 3;
-            (targets[6 + i], calls[6 + i]) = (
-                d.assetGate,
-                abi.encodeCall(
-                    AssetGate.register,
-                    (a, usd ? AssetGate.Class.TREASURY : AssetGate.Class.STOCK8056, usd ? 27 : 31, 7)
-                )
-            );
-            (targets[7 + i], calls[7 + i]) = (
-                d.oracle,
-                abi.encodeCall(PriceOracle.setFeed, (a, AggregatorV3Interface(d.testFeeds[i / 2]), 1 days))
-            );
-        }
         // Last: lock the timelock.
         (targets[n - 1], calls[n - 1]) = (d.timelock, abi.encodeCall(TimelockController.updateDelay, (DELAY)));
         uint256[] memory values = new uint256[](n);
@@ -171,11 +138,21 @@ contract Deploy is Script {
         return IProofVerifier(a);
     }
 
+    /// On Arbitrum chains (Robinhood Chain) block.number and vm.getBlockNumber() report the
+    /// parent-chain block, so ask the RPC for the L2 head. It is read before the broadcast
+    /// lands: a lower bound of the deploy block, which is all the indexers need.
+    function _l2Block() internal returns (uint256) {
+        try vm.rpc("eth_blockNumber", "[]") returns (bytes memory r) {
+            return uint256(bytes32(r)) >> (256 - 8 * r.length);
+        } catch {
+            return vm.getBlockNumber(); // no RPC (unit tests)
+        }
+    }
+
     function _write(Deployed memory d) internal {
         string memory k = "deployment";
         vm.serializeUint(k, "chainId", block.chainid);
-        // vm.getBlockNumber: on Arbitrum chains block.number is the L1 block, not the L2 one.
-        vm.serializeUint(k, "deployBlock", vm.getBlockNumber());
+        vm.serializeUint(k, "deployBlock", _l2Block());
         vm.serializeAddress(k, "poseidon2", d.hasher);
         // Expected roles, for script/PostDeployCheck.s.sol.
         vm.serializeAddress(k, "safe", vm.envAddress("SAFE"));
@@ -197,19 +174,6 @@ contract Deploy is Script {
         vm.serializeAddress(k, "encumbranceRegistry", d.encumbrances);
         vm.serializeAddress(k, "navAttestor", d.nav);
         vm.serializeAddress(k, "solvencyVerifier", d.solvency);
-        if (d.testAssets[0] != address(0)) {
-            string[4] memory symbols = ["TSLA", "NVDA", "AMZN", "USDG"];
-            string memory t = "testAssets";
-            string memory f = "testFeeds";
-            string memory tj;
-            string memory fj;
-            for (uint256 i; i < 4; ++i) {
-                tj = vm.serializeAddress(t, symbols[i], d.testAssets[i]);
-                fj = vm.serializeAddress(f, symbols[i], d.testFeeds[i]);
-            }
-            vm.serializeString(k, "testAssets", tj);
-            vm.serializeString(k, "testFeeds", fj);
-        }
         string memory json = vm.serializeAddress(k, "crdnStaking", d.staking);
         string memory path = string.concat("../packages/shared/deployments/", vm.toString(block.chainid), ".json");
         vm.writeJson(json, path);

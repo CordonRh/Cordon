@@ -1,8 +1,9 @@
 # Security
 
-Cordon is unaudited by a third party. The testnet deployment (Robinhood Chain Testnet,
-46630) holds faucet tokens only. Do not deposit real assets until an external audit of
-`contracts/` and `circuits/` is complete.
+Cordon is live on Robinhood Chain mainnet (4663; addresses in
+`packages/shared/deployments/4663.json`). The contracts are owned by a 2-of-3 Safe through
+a 24h timelock. NAV vaults are off and $CRDN is not launched (`CrdnStaking` is not
+deployed). Cordon has not been audited by a third party (see Audit history).
 
 ## Reporting a vulnerability
 
@@ -30,8 +31,7 @@ paused.
 | EncumbranceRegistry | `declareDefault` | keeper | Lets the holder enforce a PLEDGE / LIEN |
 | DvPSettler | `submitBatch` | sequencer | Settles trades; every order is bound by its trader's own proof |
 | CordonPool | `applyOp`, `creditFee` | registered engines | Spends / creates notes after the engine verified a proof |
-| TimelockController | `schedule`, `execute`, `cancel` | mainnet: 2-of-3 Safe; testnet: admin EOA | 24h delay on everything above marked "timelock" |
-| TestnetStockToken / TestnetPriceFeed (testnet only) | `setMultiplier`, `setAnswer` | testnet admin EOA | Simulate dividends, splits and prices |
+| TimelockController | `schedule`, `execute`, `cancel` | 2-of-3 Safe | 24h delay on everything above marked "timelock" |
 
 Off-chain keys:
 
@@ -39,9 +39,8 @@ Off-chain keys:
 |---|---|---|---|
 | Keeper | CordonControl keeper role | Supabase function secret `KEEPER_PRIVATE_KEY` | The keeper functions above |
 | Relayer | no role | Supabase function secret `RELAYER_PRIVATE_KEY` | Pays gas for users' proof-carrying calls (allow-listed targets, 60 per client IP per hour). When it refuses, the app submits the same call from the user's wallet, so exits never depend on it |
-| Sequencer | CordonControl sequencer | Vercel env (testnet) / Nitro enclave (mainnet) | `submitBatch` |
-| Sequencer seal seed | — | Vercel env (testnet) / enclave memory (mainnet) | Reads sealed orders (amounts, note openings; never spending keys) |
-| Testnet admin | timelock proposer/executor (testnet only) | Supabase function secret `ADMIN_PRIVATE_KEY` | Schedules / executes vault registrations; unset on mainnet |
+| Sequencer | CordonControl sequencer | Vercel env (hosted sequencer) | `submitBatch` |
+| Sequencer seal seed | — | Vercel env (hosted sequencer) | Reads sealed orders (amounts, note openings; never spending keys) |
 | Supabase service role | database | Vercel + Supabase secrets | Bypasses RLS; never exposed to browsers |
 
 ## Monitoring and incident response
@@ -50,7 +49,7 @@ Off-chain keys:
 plus the `ALERT_WEBHOOK_URL` webhook when set) on: governance and role events
 (timelock schedule/execute/cancel, engine/keeper/guardian/sequencer/fee changes, asset
 and feed changes), pauses, held income-index steps, withdrawals above 10% of an asset's
-pool balance, failing or stale oracle feeds, and keeper / relayer / sequencer / admin
+pool balance, failing or stale oracle feeds, and keeper / relayer / sequencer
 balances below 0.002 ETH.
 
 Alerts page the on-call operator over Telegram (`ALERT_WEBHOOK_URL` is a bot
@@ -76,10 +75,10 @@ Runbook:
 
 | Id | Severity | Why it is accepted |
 |---|---|---|
-| nav-nullifier-precommit | Medium | A vault that attests NAV publishes its holdings' nullifiers so the contract can check they are unspent; its later spends are therefore linkable to the vault. Vaults opt in to public NAV; individual users never attest. Removing it needs a nullifier non-membership accumulator. Decision (2026-10-07): mainnet launches with NAV vaults off: no `registerVault` proposal goes through the timelock, and the vault-registrar worker cannot run there (`ADMIN_PRIVATE_KEY` unset), until the accumulator ships. |
-| attestation-not-bound-or-checked | Low | The enclave sequencer is not deployed; the hosted testnet sequencer is documented as unattested. Binding the attestation to the seal key and verifying it in the browser is a mainnet launch item. |
+| nav-nullifier-precommit | Medium | A vault that attests NAV publishes its holdings' nullifiers so the contract can check they are unspent; its later spends are therefore linkable to the vault. Vaults opt in to public NAV; individual users never attest. Removing it needs a nullifier non-membership accumulator. Decision (2026-10-07): mainnet runs with NAV vaults off until the accumulator ships: no `registerVault` proposal goes through the timelock, no vault registration worker runs, and the dashboard hides vault registration. |
+| attestation-not-bound-or-checked | Low | `services/tee-sequencer` is not deployed. DvP runs on the hosted sequencer (`src/server/sequencer.ts`), which is unattested and can read the orders sealed to it (amounts, note openings; never spending keys). It cannot change a trade: every order is bound by its trader's own proof (`docs/THREAT_MODEL.md`). |
 | exact-amount-deposit-withdraw-link | Low | A note withdrawn whole carries its deposit amount and links the two. Partial withdrawal is the default: `withdraw()` refuses the note's full amount unless the caller passes `"whole"`, and the dashboard does so only after an explicit confirmation under the linkability warning (2026-10-08). A near-whole amount is not blocked and is almost as linkable; avoiding it is the user's choice, inherent to arbitrary-amount pools (`docs/THREAT_MODEL.md`). |
-| anon-auto-approved-default | Low | Testnet only: with the `testnet_auto_default` setting on, any default request is approved at once so testers can try enforcement; anyone can therefore push a testnet pledge into default (faucet tokens only). The setting is off by default and stays off on mainnet, where the keeper reviews each request. |
+| anon-auto-approved-default | Low | With the `auto_default` setting on, any default request would be approved at once, so anyone could push a pledge into default. The setting is off (`20261005154403_hardening.sql`, `20261009000000_mainnet.sql`) and stays off: the keeper reviews each request. |
 
 ## Rate limits and anonymous writes
 
@@ -108,27 +107,28 @@ checks they are exactly what the pinned toolchain produces from the circuits.
 
 ## Audit scope
 
-The reviewed version is the release tag `v0.1.0`. Its `contracts/src` matches the testnet
-deployment (`packages/shared/deployments/46630.json`), except `CrdnStaking.sol`, which is
-not deployed.
+The reviewed version is the release tag `v0.1.0`. Its `contracts/src` is the code of the
+mainnet deployment (`packages/shared/deployments/4663.json`), except `CrdnStaking.sol`,
+which is not deployed. `PerShareFeed.sol`, the price adapter for Chainlink's total-return
+Stock Token feeds (deployed with the asset listing, `4663.listing.json`), came after that
+review; unit, fuzz and mainnet fork tests cover it.
 
 In scope: code that holds or moves funds or keys, authenticates users, or decides
 settlement. Out of scope: UI code under `src/views`, `src/components` and styles; tests;
 generated verifiers (CI checks they match the circuits); `contracts/lib` (pinned
-third-party code, installed by `contracts/install.sh`); testnet-only mocks under
-`contracts/src/testnet` (behaviour only).
+third-party code, installed by `contracts/install.sh`).
 
 - **Contracts** (`contracts/src`, Solidity 0.8.30): `CordonPool`, `BundleVerifier`,
   `DvPSettler`, `EncumbranceRegistry`, `ActionEngine`, `NavAttestor`, `SolvencyVerifier`,
-  `ScreeningGate`, `CordonControl`, `AssetGate`, `PriceOracle`, `CrdnStaking`,
+  `ScreeningGate`, `CordonControl`, `AssetGate`, `PriceOracle`, `PerShareFeed`, `CrdnStaking`,
   `libraries/Poseidon.sol`, `interfaces/IERC8056.sol`; scripts `Deploy.s.sol`,
-  `UpgradeDvP.s.sol`, `PostDeployCheck.s.sol`.
+  `UpgradeDvP.s.sol`, `PostDeployCheck.s.sol`, `ListAssets.s.sol`, `MainnetAssets.sol`.
 - **Circuits** (`circuits/`, Noir 1.0.0-beta.22, UltraHonk via bb 5.0.0-nightly.20260522):
   `lib`, `transfer`, `bundle`, `unbundle`, `term`, `income`, `encumber`, `unlock`,
   `enforce`, `order`, `dvp`, `nav`.
 - **Off-chain** (TypeScript): `packages/sdk/src`; `src/server`, `src/lib/cordon.ts`,
   `src/lib/workspace-crypto.ts`; `supabase/functions/*` and `supabase/migrations/*`;
-  `services/*`; `scripts/register-vaults.ts`, `scripts/swap-settler.ts`.
+  `services/*`.
 
 ## Audit history
 

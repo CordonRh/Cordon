@@ -2,8 +2,8 @@
 
 ## What Cordon cannot do (honest boundaries)
 
-- **It is not audited.** An AI-assisted security review was done; an external audit of
-  the contracts and circuits is required before real funds.
+- **It is not audited by a third party.** AI-assisted security reviews were done
+  (SECURITY.md, Audit history).
 - **It does not hide that you use it.** Deposits and withdrawals are public transactions
   with an address, an asset and an amount. A note withdrawn whole, never split, carries
   its deposit amount and links the two. The dashboard asks how much to withdraw and keeps
@@ -12,10 +12,9 @@
   amount to keep the two unlinked.
 - **It does not hide vault activity.** A vault that attests NAV publishes its holdings'
   nullifiers, so its later spends are linkable to it.
-- **Testnet DvP is not private from its operator.** The hosted sequencer reads sealed
-  orders (amounts and note openings, never spending keys). Mainnet runs the enclave
-  sequencer; until its attestation is checked in the browser, the operator could read
-  orders there too.
+- **DvP is not private from its operator.** The hosted sequencer reads sealed orders
+  (amounts and note openings, never spending keys). It cannot change a trade: every
+  order is bound by its trader's own proof.
 - **It depends on the issuer.** If the Stock Token issuer freezes the pool, changes the
   multiplier wrongly or forces a transfer, Cordon cannot undo it. Unexplained index jumps
   are held, not booked, but the underlying token is the issuer's.

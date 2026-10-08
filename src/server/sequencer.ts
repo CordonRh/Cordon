@@ -1,14 +1,14 @@
 /// <reference types="node" />
 /**
- * Hosted DvP sequencer (testnet). The same matching as services/tee-sequencer, run once
+ * Hosted DvP sequencer. The same matching as services/tee-sequencer, run once
  * a minute by pg_cron (POST /api/sequencer): orders wait in dvp_orders sealed to the
  * SEQUENCER_SEAL_SEED key; each settled or excluded trade's result goes back sealed to
  * the trader's receiving key through note_inbox. Orders carry their traders' order
  * proofs, never spending keys: the sequencer can settle an order as placed or not at all.
  * Results are a convenience: every trader can rebuild its notes from the TradeSettled
  * event (cordon.ts recoverOrder), so a lost delivery never loses funds.
- * Note: the operator can still read orders (amounts, note openings); mainnet runs
- * services/tee-sequencer in a Nitro Enclave for that privacy.
+ * Note: the operator can still read orders (amounts, note openings); accepted (Low)
+ * in SECURITY.md.
  */
 import {
   authorised,

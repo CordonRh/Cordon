@@ -1,3 +1,2 @@
--- Testnet: requested NAV vaults are scheduled/executed through the timelock without ops.
--- The worker is a no-op unless the ADMIN_PRIVATE_KEY function secret is set.
-select cron.schedule('cordon-vault-registrar', '*/10 * * * *', $$select public.invoke_worker('vault-registrar')$$);
+-- No-op: NAV vaults stay off on mainnet, so no vault registration worker is scheduled.
+-- 20261009000000_mainnet.sql unschedules the job an earlier version of this file created.

@@ -44,3 +44,5 @@ supabase/.temp/
 packages/shared/deployments/31337.json
 .e2e-note.json
 
+
+__pycache__/

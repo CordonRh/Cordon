@@ -555,7 +555,7 @@ export async function release(held: Held, h: Hooks) {
   return relay(need().encumbranceRegistry, data, { spent: [], add: [] }, h);
 }
 
-/** Holder: ask for a default (the keeper declares it once approved; testnet approves at once). */
+/** Holder: ask for a default (the keeper declares it once approved). */
 export async function requestDefault(held: Held) {
   await initHasher();
   await trpc.encumbrances.requestDefault.mutate(hex32(encCommit(encFromJson(held.enc))));
@@ -915,23 +915,4 @@ export async function openDisclosure(id: string) {
       spent: spent.has(hex32(BigInt(n.nullifier))),
     })),
   };
-}
-
-/** TESTNET ONLY: faucet Stock Tokens / USDG from the deployment (TESTNET_ASSETS). */
-export const testAssets: Record<string, Address> =
-  (deployment as (Deployment & { testAssets?: Record<string, Address> }) | null)?.testAssets ?? {};
-
-const faucetAbi = [
-  { type: "function", name: "mint", stateMutability: "nonpayable", inputs: [{ type: "address" }, { type: "uint256" }], outputs: [] },
-] as const;
-
-/** Mints testnet faucet tokens to `to` (testnet only). */
-export async function faucet(symbol: string, to: Address) {
-  await initHasher();
-  const token = testAssets[symbol];
-  if (!token) throw new Error(`No test ${symbol} on this network.`);
-  const amount = symbol === "USDG" ? 1000n * 10n ** 6n : 100n * 10n ** 18n;
-  const hash = await writeContract(wagmiConfig, { address: token, abi: faucetAbi, functionName: "mint", args: [to, amount], chainId: robinhood.id });
-  await waitForTransactionReceipt(wagmiConfig, { hash });
-  return amount;
 }
