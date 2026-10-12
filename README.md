@@ -178,13 +178,33 @@ CI (`.github/workflows/ci.yml`) runs on every push:
 - **App:** deployed on Vercel; the deployment manifest is passed through the
   `VITE_CORDON_DEPLOYMENT` / `CORDON_DEPLOYMENT` environment variables.
 
-| Network | Chain ID | Addresses |
-|---|---|---|
-| Robinhood Chain | 4663 | [`packages/shared/deployments/4663.json`](packages/shared/deployments/4663.json) |
+### Deployed addresses
 
-Release `v0.1.0` is the build of record for the mainnet deployment: its `contracts/src`
-matches the deployed bytecode (except `CrdnStaking`, which is not deployed), and
-`PostDeployCheck.s.sol` verifies the live configuration.
+Robinhood Chain mainnet (chain ID 4663). Manifests:
+[`packages/shared/deployments/4663.json`](packages/shared/deployments/4663.json) (core) and
+[`4663.listing.json`](packages/shared/deployments/4663.listing.json) (the 35 `PerShareFeed`
+adapters and the listing batch). Every contract (the 46 core deployments, including the
+verifier libraries, and the 35 adapters) is source-verified on [Sourcify](https://sourcify.dev),
+and its on-chain code matches a build of release `v0.2.0` (identical `contracts/src` in later
+releases), all but the compiler's metadata hash, which depends on the build environment.
+`CrdnStaking` is not deployed. `PostDeployCheck.s.sol` verifies the live configuration.
+
+| Contract | Address |
+| --- | --- |
+| CordonPool | [`0x12771a4430fcc9602974440Ddda79ef6251e156E`](https://robinhoodchain.blockscout.com/address/0x12771a4430fcc9602974440Ddda79ef6251e156E) · [source](https://repo.sourcify.dev/4663/0x12771a4430fcc9602974440Ddda79ef6251e156E) |
+| CordonControl | [`0x5BddEdad114541F88D04c7Aced5C0Aaa5cfbFA81`](https://robinhoodchain.blockscout.com/address/0x5BddEdad114541F88D04c7Aced5C0Aaa5cfbFA81) · [source](https://repo.sourcify.dev/4663/0x5BddEdad114541F88D04c7Aced5C0Aaa5cfbFA81) |
+| TimelockController (24h, Safe-only roles) | [`0xe1C26dC0078f43Cfd58C4e25D60D2d644e58af2e`](https://robinhoodchain.blockscout.com/address/0xe1C26dC0078f43Cfd58C4e25D60D2d644e58af2e) · [source](https://repo.sourcify.dev/4663/0xe1C26dC0078f43Cfd58C4e25D60D2d644e58af2e) |
+| Safe (2-of-3) | [`0x7854512d922af91A3D16881e8f88144081c680d6`](https://robinhoodchain.blockscout.com/address/0x7854512d922af91A3D16881e8f88144081c680d6) |
+| AssetGate | [`0xd77D3aFB2FfdFC40D3BCf3Af00E356c813429E9E`](https://robinhoodchain.blockscout.com/address/0xd77D3aFB2FfdFC40D3BCf3Af00E356c813429E9E) · [source](https://repo.sourcify.dev/4663/0xd77D3aFB2FfdFC40D3BCf3Af00E356c813429E9E) |
+| PriceOracle | [`0xB8e79eb41D91A8e4dBD8669c1A2E27b03bDE4e45`](https://robinhoodchain.blockscout.com/address/0xB8e79eb41D91A8e4dBD8669c1A2E27b03bDE4e45) · [source](https://repo.sourcify.dev/4663/0xB8e79eb41D91A8e4dBD8669c1A2E27b03bDE4e45) |
+| BundleVerifier | [`0x6219305cD85B6C53ad8e5D95720B5Ff3166B67a7`](https://robinhoodchain.blockscout.com/address/0x6219305cD85B6C53ad8e5D95720B5Ff3166B67a7) · [source](https://repo.sourcify.dev/4663/0x6219305cD85B6C53ad8e5D95720B5Ff3166B67a7) |
+| ActionEngine | [`0x6A2f034420FDFD49a0C412167678006c266b711a`](https://robinhoodchain.blockscout.com/address/0x6A2f034420FDFD49a0C412167678006c266b711a) · [source](https://repo.sourcify.dev/4663/0x6A2f034420FDFD49a0C412167678006c266b711a) |
+| DvPSettler | [`0x4eAA1eEb084fDcA4F3B270F8E7ceDB23da94cA5B`](https://robinhoodchain.blockscout.com/address/0x4eAA1eEb084fDcA4F3B270F8E7ceDB23da94cA5B) · [source](https://repo.sourcify.dev/4663/0x4eAA1eEb084fDcA4F3B270F8E7ceDB23da94cA5B) |
+| EncumbranceRegistry | [`0x8090e68bedAddBb2355C53E2E2A9C5495b715d4b`](https://robinhoodchain.blockscout.com/address/0x8090e68bedAddBb2355C53E2E2A9C5495b715d4b) · [source](https://repo.sourcify.dev/4663/0x8090e68bedAddBb2355C53E2E2A9C5495b715d4b) |
+| SolvencyVerifier | [`0x207bf787AcB6BA8975c856A485E351eDdf706889`](https://robinhoodchain.blockscout.com/address/0x207bf787AcB6BA8975c856A485E351eDdf706889) · [source](https://repo.sourcify.dev/4663/0x207bf787AcB6BA8975c856A485E351eDdf706889) |
+| NavAttestor (no vaults registered) | [`0x567b9049Fe583C437036114c27B5515eD146FCc9`](https://robinhoodchain.blockscout.com/address/0x567b9049Fe583C437036114c27B5515eD146FCc9) · [source](https://repo.sourcify.dev/4663/0x567b9049Fe583C437036114c27B5515eD146FCc9) |
+| ScreeningGate | [`0x5F4e1500d8699CF50b1EDc2DEBF63970f3F212b5`](https://robinhoodchain.blockscout.com/address/0x5F4e1500d8699CF50b1EDc2DEBF63970f3F212b5) · [source](https://repo.sourcify.dev/4663/0x5F4e1500d8699CF50b1EDc2DEBF63970f3F212b5) |
+| Poseidon2 | [`0x1901846B3da7Ad39aD8515CD462a7Ec88AE59C39`](https://robinhoodchain.blockscout.com/address/0x1901846B3da7Ad39aD8515CD462a7Ec88AE59C39) · [source](https://repo.sourcify.dev/4663/0x1901846B3da7Ad39aD8515CD462a7Ec88AE59C39) |
 
 ## Security
 
