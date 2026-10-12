@@ -14,7 +14,9 @@ import {MainnetAssets} from "../script/MainnetAssets.sol";
 
 /// The mainnet listing against the REAL 4663 deployment, tokens and Chainlink feeds: the
 /// batch goes Safe -> timelock -> AssetGate/PriceOracle exactly as the Safe proposal will,
-/// and every asset prices one raw unit at its feed's per-token answer. Skipped offline;
+/// and every asset prices one raw unit at its feed's per-token answer. Once the listing has
+/// executed on 4663 (2026-10-12) the tests check the live adapters and wiring instead of
+/// replaying the batch. Skipped offline;
 /// run with FORK_RPC_URL=https://rpc.mainnet.chain.robinhood.com/rpc (see Fork.t.sol).
 contract ForkListingTest is Test {
     AssetGate internal gate;
@@ -23,6 +25,7 @@ contract ForkListingTest is Test {
     address internal safe;
     MainnetAssets.Asset[] internal stocks;
     address[] internal adapters;
+    bool internal listed;
 
     function setUp() public {
         if (block.chainid != 4663) {
@@ -38,10 +41,16 @@ contract ForkListingTest is Test {
         oracle = PriceOracle(vm.parseJsonAddress(d, ".priceOracle"));
         timelock = TimelockController(payable(vm.parseJsonAddress(d, ".timelock")));
         safe = vm.parseJsonAddress(d, ".safe");
+        listed = gate.assetCount() != 0;
+        string memory l = vm.readFile("../packages/shared/deployments/4663.listing.json");
         MainnetAssets.Asset[] memory s = MainnetAssets.stocks();
         for (uint256 i; i < s.length; ++i) {
             stocks.push(s[i]);
-            adapters.push(address(new PerShareFeed(AggregatorV3Interface(s[i].feed), IERC8056(s[i].token))));
+            adapters.push(
+                listed
+                    ? vm.parseJsonAddress(l, string.concat(".adapters.", s[i].symbol))
+                    : address(new PerShareFeed(AggregatorV3Interface(s[i].feed), IERC8056(s[i].token)))
+            );
         }
     }
 
@@ -61,15 +70,20 @@ contract ForkListingTest is Test {
         (address[] memory targets, bytes[] memory calls) = new ListAssets().batch(gate, oracle, adapters);
         uint256[] memory values = new uint256[](targets.length);
         bytes32 salt = keccak256("cordon.listing.v1");
-        uint256 delay = timelock.getMinDelay();
-        vm.prank(safe);
-        timelock.scheduleBatch(targets, values, calls, bytes32(0), salt, delay);
-        vm.expectRevert(); // not before the 24 h delay
-        vm.prank(safe);
-        timelock.executeBatch(targets, values, calls, bytes32(0), salt);
-        vm.warp(block.timestamp + delay);
-        vm.prank(safe);
-        timelock.executeBatch(targets, values, calls, bytes32(0), salt);
+        if (listed) {
+            // The live batch is this exact batch, executed through the timelock.
+            assertTrue(timelock.isOperationDone(timelock.hashOperationBatch(targets, values, calls, bytes32(0), salt)));
+        } else {
+            uint256 delay = timelock.getMinDelay();
+            vm.prank(safe);
+            timelock.scheduleBatch(targets, values, calls, bytes32(0), salt, delay);
+            vm.expectRevert(); // not before the 24 h delay
+            vm.prank(safe);
+            timelock.executeBatch(targets, values, calls, bytes32(0), salt);
+            vm.warp(block.timestamp + delay);
+            vm.prank(safe);
+            timelock.executeBatch(targets, values, calls, bytes32(0), salt);
+        }
 
         for (uint256 i; i < stocks.length; ++i) {
             assertEq(uint8(gate.classOf(stocks[i].token)), uint8(AssetGate.Class.STOCK8056));
@@ -86,13 +100,15 @@ contract ForkListingTest is Test {
     /// answer on an 18-decimal Stock Token, x1e13 for USDG's 6 decimals. Each asset is priced
     /// inside its latest round's heartbeat (24/5 feeds hold over market closes).
     function test_fork_everyAssetPricesAtTheFeedAnswer() public {
-        (address[] memory targets, bytes[] memory calls) = new ListAssets().batch(gate, oracle, adapters);
-        vm.startPrank(address(timelock));
-        for (uint256 i; i < targets.length; ++i) {
-            (bool ok, bytes memory err) = targets[i].call(calls[i]);
-            assertTrue(ok, string(err));
+        if (!listed) {
+            (address[] memory targets, bytes[] memory calls) = new ListAssets().batch(gate, oracle, adapters);
+            vm.startPrank(address(timelock));
+            for (uint256 i; i < targets.length; ++i) {
+                (bool ok, bytes memory err) = targets[i].call(calls[i]);
+                assertTrue(ok, string(err));
+            }
+            vm.stopPrank();
         }
-        vm.stopPrank();
 
         uint256 t0 = block.timestamp;
         for (uint256 i; i < stocks.length; ++i) {
